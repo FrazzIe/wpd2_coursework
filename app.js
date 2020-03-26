@@ -19,6 +19,7 @@ app.use(passport.session());
 
 app.get("/", function(req, res) {
     res.status(200);
+    res.render("home");
 })
 
 app.get("/login", function(req, res) {
