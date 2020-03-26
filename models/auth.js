@@ -2,7 +2,7 @@ var express = require('express');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var mysql = require("./mysql");
-var argon2 = require('argon2'); //import dependencies
+var argon2 = require("argon2"); //import dependencies
 
 // Configure the local strategy for use by Passport.
 //
@@ -13,15 +13,18 @@ var argon2 = require('argon2'); //import dependencies
 passport.use(new Strategy(function(username, password, cb) {
     mysql.execute(mysql.queries.findUser, { username, username }).then((result) => { //find user
         if (typeof result[0] !== "undefined") { //found user
-            if (await argon2.verify(result[0].password, password)) { //password matches
-                cb(null, result[0]);
-            } else { //doesn'tmatch
-                cb(null, false);
+            try {
+                if (argon2.verify(result[0].password, password)) { //password matches
+                    cb(null, result[0]);
+                } else { //doesn'tmatch
+                    cb(null, false);
+                }
+            } catch(error) {
+                cb(error);
             }
         } else { //not found user
             cb(null, false);
         }
-
     }).catch((error) => {
         cb(error);
     });
