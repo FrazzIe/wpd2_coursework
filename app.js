@@ -21,6 +21,19 @@ app.get("/", function(req, res) {
     res.status(200);
 })
 
+app.get("/login", function(req, res) {
+    res.render("");
+});
+
+app.post("/login", passport.authenticate("local", { failureRedirect: "/login" }), function(req, res) {
+    res.redirect("/");
+});
+  
+app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
+});
+
 app.listen(config.app.port, () => { //make app listen for port
     console.log("Coursework scheduler listening on port " + config.app.port);
 })
