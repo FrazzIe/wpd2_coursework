@@ -1,6 +1,7 @@
 var express = require("express");
 var mustache = require("mustache-express");
 var config = require("./config");
+var mysql = require("./models/mysql"); //import dependencies
 var app = express(); //init express app
 
 app.engine("mustache", mustache());
