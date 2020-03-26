@@ -24,6 +24,6 @@ execute("SELECT VERSION()", {}).then((result) => { //Check if connection was suc
 });
 
 module.exports = {
-    queries = queries,
-    query = execute
+    queries: queries,
+    query: execute
 };
