@@ -4,7 +4,8 @@
   "description": "A web-based coursework scheduling application for students",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -e js,mustache ./app.js"
   },
   "repository": {
     "type": "git",
