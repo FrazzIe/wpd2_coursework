@@ -6,6 +6,7 @@ var pool = mysql.createPool(config.mysql); //create connection pool
 var queries = { //list of mysql queries
     findUser: "SELECT users.id, users.username, users.email, users.password, UNIX_TIMESTAMP(users.created_at), users.confirmed FROM users WHERE users.username = ? OR users.email = ?",
     getUser: "SELECT users.id, users.username, users.email, users.password, UNIX_TIMESTAMP(users.created_at), users.confirmed FROM users WHERE users.id = ?",
+    createUser: "INSERT INTO users (`username`, `email`, `password`) VALUES (?, ?, ?)",
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
