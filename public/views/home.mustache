@@ -1,0 +1,59 @@
+<head>
+    {{>header}}
+    <link rel="stylesheet" type="text/css" href="/../css/home.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <form class="col-5 mx-auto" id="login-form">
+                <img src="/../img/logo.png" class="img-fluid" alt="Responsive image">
+                <div class="form-group">
+                    <label for="username">Username or Email address</label>
+                    <input type="text" class="form-control" id="login-username" placeholder="e.g. john99 or john@doe.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="Enter password..">
+                </div>
+                <div class="form-group d-flex">
+                    <button type="submit" class="btn btn-success">Login</button>
+                    <button type="button" class="btn btn-info ml-1" data-toggle="modal" data-target="#register-modal">Register</button></a>
+                </div>
+            </form>  
+        </div>
+        <div class="modal fade" id="register-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create an account</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form id="register-form">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>E-mail address</label>
+                                <input type="email" class="form-control" id="register-email" placeholder="Email" require>
+                            </div>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" class="form-control" id="register-username" placeholder="Username" require>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" id="register-password" placeholder="Password" require>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{{>footer}}
