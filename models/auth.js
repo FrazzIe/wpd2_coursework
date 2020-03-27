@@ -11,17 +11,19 @@ var argon2 = require("argon2"); //import dependencies
 // that the password is correct and then invoke `cb` with a user object, which
 // will be set at `req.user` in route handlers after authentication.
 passport.use(new Strategy(function(username, password, cb) {
-    mysql.execute(mysql.queries.findUser, [username, username]).then((result) => { //find user
+    mysql.query(mysql.queries.findUser, [username, username]).then((result) => { //find user
         if (typeof result[0] !== "undefined") { //found user
-            try {
-                if (argon2.verify(result[0].password, password)) { //password matches
+            argon2.verify(result[0].password, password).then((matches) => {
+                if (matches) { //password matches
                     cb(null, result[0]);
-                } else { //doesn'tmatch
+                    console.log("successful login");
+                } else { //doesn't match
+                    console.log("password does not match");
                     cb(null, false);
                 }
-            } catch(error) {
+            }).catch((error) => {
                 cb(error);
-            }
+            })
         } else { //not found user
             cb(null, false);
         }
@@ -43,9 +45,9 @@ passport.serializeUser(function(user, cb) {
 });
 
 passport.deserializeUser(function(id, cb) {
-    mysql.execute(mysql.queries.findUser, [id]).then((result) => { //find user
+    mysql.query(mysql.queries.getUser, [id]).then((result) => { //find user
         if (typeof result[0] !== "undefined") { //found user
-            cb(null, user);
+            cb(null, result[0]);
         } else { //not found user
             cb(null, false);
         }
