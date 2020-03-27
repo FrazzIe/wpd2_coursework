@@ -23,14 +23,15 @@ app.use(bodyParser.json()); //parse json requests
 
 app.get("/", function(req, res) {
     res.status(200);
-    res.render("home");
+    if (req.isAuthenticated()) {
+        res.render("home");
+    } else {
+        res.render("login");
+    }
+    
 })
 
-app.get("/login", function(req, res) {
-    res.render("");
-});
-
-app.post("/login", passport.authenticate("local", { failureRedirect: "/login" }), function(req, res) {
+app.post("/login", passport.authenticate("local", { failureRedirect: "/" }), function(req, res) {
     res.redirect("/");
 });
   
@@ -55,7 +56,7 @@ app.post("/register", function(req, res) {
                 res.status(500).send(error.message);
             });
         } else {
-            res.send("exists");
+            res.send("user already exists");
         }
     }).catch((error) => {
         console.log((error.message));
