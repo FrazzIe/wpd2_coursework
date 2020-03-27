@@ -8,9 +8,9 @@ var session = require("express-session"); //import dependencies
 
 var app = express(); //init express app
 
-app.engine("mustache", mustache( __dirname + "/views/partials"));
+app.engine("mustache", mustache(__dirname + "/public/views/partials"));
 app.set("view engine", "mustache");
-app.set("views", __dirname + "/views"); //setup mustache
+app.set("views", __dirname + "/public/views"); //setup mustache
 app.use(session({
     secret: config.session.secret,
 }));
