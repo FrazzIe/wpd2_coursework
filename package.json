@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -e js,mustache ./app.js"
+    "start": "nodemon -e js,mustache,css ./app.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
   "homepage": "https://github.com/FrazzIe/wpd2_coursework#readme",
   "dependencies": {
     "argon2": "^0.26.1",
+    "axios": "^0.19.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
