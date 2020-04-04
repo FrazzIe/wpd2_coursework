@@ -7,6 +7,7 @@ var queries = { //list of mysql queries
     findUser: "SELECT users.id, users.username, users.email, users.password, UNIX_TIMESTAMP(users.created_at), users.confirmed FROM users WHERE users.username = ? OR users.email = ?",
     getUser: "SELECT users.id, users.username, users.email, users.password, UNIX_TIMESTAMP(users.created_at), users.confirmed FROM users WHERE users.id = ?",
     createUser: "INSERT INTO users (`username`, `email`, `password`) VALUES (?, ?, ?)",
+    activeUser: "UPDATE users SET confirmed = 1 WHERE id = ?",
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
