@@ -17,6 +17,12 @@ const config = {
     },
     session: {
         secret: process.env.SESSION_SECRET,
+    },
+    mailer: {
+        secret: process.env.EMAIL_SECRET,
+        service: process.env.EMAIL_SERVICE,
+        user: process.env.EMAIL_USER,
+        password: process.env.EMAIL_PASS,
     }
 }
 

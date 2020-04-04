@@ -3,10 +3,12 @@ var mustache = require("mustache-express");
 var config = require("./config");
 var mysql = require("./models/mysql");
 var auth = require("./models/auth");
+var mailer = require("./models/mailer");
 var passport = require("passport");
 var session = require("express-session");
 var bodyParser = require('body-parser');
-var argon2 = require("argon2"); //import dependencies
+var argon2 = require("argon2");
+var jwt = require("jsonwebtoken"); //import dependencies
 
 var app = express(); //init express app
 
