@@ -61,6 +61,23 @@ app.post("/register", function(req, res) {
         if (typeof result[0] === "undefined") {
             argon2.hash(req.body.password).then((hashedPassword) => {
                 mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => {
+                    console.log(result)
+
+                    jwt.sign({ //create a json web token with the account id inside
+                        id: result.insertId,
+                    }, config.mailer.secret, {
+                        expiresIn: "1d"
+                    }, function(err, token) {
+                        console.log("token signed: ", token);
+                        const url = req.getUrl() + "/verify/" + token
+                        console.log(req.body.email, config.mailer.subject, config.mailer.body.format(req.body.username, url))
+                        mailer.sendMail({
+                            to: req.body.email,
+                            subject: config.mailer.subject,
+                            html: config.mailer.body.format(req.body.username, url)
+                        });
+                    });
+
                     res.send("ok");
                 }).catch((error) => {
                     res.status(500).send(error.message);

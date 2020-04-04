@@ -23,6 +23,15 @@ const config = {
         service: process.env.EMAIL_SERVICE,
         user: process.env.EMAIL_USER,
         password: process.env.EMAIL_PASS,
+        subject: "Coursework Planner - Email confirmation", //email confirmation subject
+        body: `
+            Hi {0},
+            <br>
+            <br>
+            Thank you for joining Coursework Planner,
+            <br>
+            Please click the link to confirm your email: <a href="{1}">{1}</a>
+        `, //email confirmation body, {0} for the username, {1} for the confirmation url
     }
 }
 
