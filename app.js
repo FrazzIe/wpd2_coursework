@@ -4,6 +4,7 @@ var config = require("./config");
 var mysql = require("./models/mysql");
 var auth = require("./models/auth");
 var mailer = require("./models/mailer");
+var utils = require("./helpers/utils");
 var passport = require("passport");
 var session = require("express-session");
 var bodyParser = require('body-parser');
