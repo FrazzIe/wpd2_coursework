@@ -22,6 +22,17 @@ app.use(passport.initialize());
 app.use(passport.session()); //setup passport session
 app.use(express.static(__dirname + "/public")); //serve static files
 app.use(bodyParser.json()); //parse json requests
+app.use(function(req, res, next) { //funcs to get url
+    req.getUrl = function() {
+        return req.protocol + "://" + req.get("host");
+    }
+    
+    req.getFullUrl = function() {
+        return req.protocol + "://" + req.get("host") + req.originalUrl;
+    }
+
+    return next();
+}); //stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express
 
 app.get("/", function(req, res) {
     res.status(200);
