@@ -98,3 +98,22 @@ app.post("/register", function(req, res) {
 app.listen(config.app.port, () => { //make app listen for port
     console.log("Coursework scheduler listening on port " + config.app.port);
 })
+
+app.get("/verify/:token", function(req, res) {
+    try {
+        var user = jwt.verify(req.params.token, config.mailer.secret);
+
+        console.log(user);
+
+        mysql.query(mysql.queries.activateUser, [user.id]).then((result) => {
+            console.log(result)
+
+            res.send("ok");
+        }).catch((error) => {
+            res.status(500).send(error.message);
+            console.log((error.message));
+        });       
+    } catch(e) {
+        console.log(e.message);
+    }
+});
