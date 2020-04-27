@@ -42,10 +42,9 @@ app.get("/", function(req, res) {
     } else {
         res.render("login");
     }
-    
 })
 
-app.post("/login", passport.authenticate("local", { failureRedirect: "/" }), function(req, res) {
+app.post("/login", passport.authenticate("local", { failureRedirect: "/" }), function(req, res) { // models/auth.js -> use strategy to validate user login credentials
     res.redirect("/");
 });
   
@@ -57,13 +56,13 @@ app.get("/logout", function(req, res) {
 app.post("/register", function(req, res) {
     console.log(req.body);
 
-    mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => {
-        if (typeof result[0] === "undefined") {
-            argon2.hash(req.body.password).then((hashedPassword) => {
-                mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => {
+    mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => { //finds any rows with the username or email
+        if (typeof result[0] === "undefined") { //checks if a user does not exist
+            argon2.hash(req.body.password).then((hashedPassword) => { //scrambles the password using argon2
+                mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => { //creates user account in database
                     console.log(result)
 
-                    jwt.sign({ //create a json web token with the account id inside
+                    jwt.sign({ //create a json web token with the account id inside (used for email conformation)
                         id: result.insertId,
                     }, config.mailer.secret, {
                         expiresIn: "1d"
@@ -75,7 +74,7 @@ app.post("/register", function(req, res) {
                             to: req.body.email,
                             subject: config.mailer.subject,
                             html: config.mailer.body.format(req.body.username, url)
-                        });
+                        }); //sends an email to the user with a link to activate the newly created account
                     });
 
                     res.send("ok");
@@ -86,7 +85,7 @@ app.post("/register", function(req, res) {
             }).catch((error) => {
                 res.status(500).send(error.message);
             });
-        } else {
+        } else { //prevents registeration as user already exists
             res.send("user already exists");
         }
     }).catch((error) => {
@@ -99,13 +98,13 @@ app.listen(config.app.port, () => { //make app listen for port
     console.log("Coursework scheduler listening on port " + config.app.port);
 })
 
-app.get("/verify/:token", function(req, res) {
+app.get("/verify/:token", function(req, res) { //handles email verficiation tokens
     try {
-        var user = jwt.verify(req.params.token, config.mailer.secret);
+        var user = jwt.verify(req.params.token, config.mailer.secret); //check if token is valid
 
         console.log(user);
 
-        mysql.query(mysql.queries.activateUser, [user.id]).then((result) => {
+        mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
             console.log(result)
 
             res.send("ok");
