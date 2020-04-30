@@ -17,102 +17,100 @@ app.engine("mustache", mustache(__dirname + "/public/views/partials"));
 app.set("view engine", "mustache");
 app.set("views", __dirname + "/public/views"); //setup mustache
 app.use(session({
-    secret: config.session.secret,
+	secret: config.session.secret,
 })); //setup session
 app.use(passport.initialize());
 app.use(passport.session()); //setup passport session
 app.use(express.static(__dirname + "/public")); //serve static files
 app.use(bodyParser.json()); //parse json requests
 app.use(function(req, res, next) { //funcs to get url
-    req.getUrl = function() {
-        return req.protocol + "://" + req.get("host");
-    }
-    
-    req.getFullUrl = function() {
-        return req.protocol + "://" + req.get("host") + req.originalUrl;
-    }
+	req.getUrl = function() {
+		return req.protocol + "://" + req.get("host");
+	}
+	
+	req.getFullUrl = function() {
+		return req.protocol + "://" + req.get("host") + req.originalUrl;
+	}
 
-    return next();
+	return next();
 }); //stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express
 
 app.get("/", function(req, res) {
-    res.status(200);
-    if (req.isAuthenticated()) {
-        res.render("home");
-    } else {
-        res.render("login");
-    }
+	res.status(200);
+	if (req.isAuthenticated()) {
+		res.render("home");
+	} else {
+		res.render("login");
+	}
 })
 
-app.post("/login", passport.authenticate("local", { failureRedirect: "/" }), function(req, res) { // models/auth.js -> use strategy to validate user login credentials
-    res.redirect("/");
 });
   
 app.get("/logout", function(req, res) {
-    req.logout();
-    res.redirect("/");
+	req.logout();
+	res.redirect("/");
 });
 
 app.post("/register", function(req, res) {
-    console.log(req.body);
+	console.log(req.body);
 
-    mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => { //finds any rows with the username or email
-        if (typeof result[0] === "undefined") { //checks if a user does not exist
-            argon2.hash(req.body.password).then((hashedPassword) => { //scrambles the password using argon2
-                mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => { //creates user account in database
-                    console.log(result)
+	mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => { //finds any rows with the username or email
+		if (typeof result[0] === "undefined") { //checks if a user does not exist
+			argon2.hash(req.body.password).then((hashedPassword) => { //scrambles the password using argon2
+				mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => { //creates user account in database
+					console.log(result)
 
-                    jwt.sign({ //create a json web token with the account id inside (used for email conformation)
-                        id: result.insertId,
-                    }, config.mailer.secret, {
-                        expiresIn: "1d"
-                    }, function(err, token) {
-                        console.log("token signed: ", token);
-                        const url = req.getUrl() + "/verify/" + token
-                        console.log(req.body.email, config.mailer.subject, config.mailer.body.format(req.body.username, url))
-                        mailer.sendMail({
-                            to: req.body.email,
-                            subject: config.mailer.subject,
-                            html: config.mailer.body.format(req.body.username, url)
-                        }); //sends an email to the user with a link to activate the newly created account
-                    });
+					jwt.sign({ //create a json web token with the account id inside (used for email conformation)
+						id: result.insertId,
+					}, config.mailer.secret, {
+						expiresIn: "1d"
+					}, function(err, token) {
+						console.log("token signed: ", token);
+						const url = req.getUrl() + "/verify/" + token
+						console.log(req.body.email, config.mailer.subject, config.mailer.body.format(req.body.username, url))
+						mailer.sendMail({
+							to: req.body.email,
+							subject: config.mailer.subject,
+							html: config.mailer.body.format(req.body.username, url)
+						}); //sends an email to the user with a link to activate the newly created account
+					});
 
-                    res.send("ok");
-                }).catch((error) => {
-                    res.status(500).send(error.message);
-                    console.log(error.message);
-                });
-            }).catch((error) => {
-                res.status(500).send(error.message);
-            });
-        } else { //prevents registeration as user already exists
-            res.send("A user already exists with this email or username");
-        }
-    }).catch((error) => {
-        console.log(error.message);
-        res.status(500).send(error.message);
-    });
+					res.send("ok");
+				}).catch((error) => {
+					res.status(500).send(error.message);
+					console.log(error.message);
+				});
+			}).catch((error) => {
+				res.status(500).send(error.message);
+			});
+		} else { //prevents registeration as user already exists
+			res.send("A user already exists with this email or username");
+		}
+	}).catch((error) => {
+		console.log(error.message);
+		res.status(500).send(error.message);
+	});
 });
 
 app.listen(config.app.port, () => { //make app listen for port
-    console.log("Coursework scheduler listening on port " + config.app.port);
+	console.log("Coursework scheduler listening on port " + config.app.port);
 })
 
 app.get("/verify/:token", function(req, res) { //handles email verficiation tokens
-    try {
-        var user = jwt.verify(req.params.token, config.mailer.secret); //check if token is valid
+	try {
+		var user = jwt.verify(req.params.token, config.mailer.secret); //check if token is valid
 
-        console.log(user);
+		console.log(user);
 
-        mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
-            console.log(result)
+		mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
+			console.log(result)
 
-            res.send("ok");
-        }).catch((error) => {
-            res.status(500).send(error.message);
-            console.log((error.message));
-        });       
-    } catch(e) {
-        console.log(e.message);
-    }
+			res.send("ok");
+		}).catch((error) => {
+			res.status(500).send(error.message);
+			console.log((error.message));
+		});       
+	} catch(e) {
+		console.log(e.message);
+	}
 });
