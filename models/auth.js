@@ -15,17 +15,27 @@ passport.use(new Strategy(function(username, password, cb) {
         if (typeof result[0] !== "undefined") { //found user
             argon2.verify(result[0].password, password).then((matches) => {
                 if (matches) { //password matches
-                    cb(null, result[0]);
-                    console.log("successful login");
+                    if (result[0].confirmed === 1) {
+                        cb(null, result[0], {
+                            message: "ok"
+                        });
+                    } else {
+                        cb(null, false, {
+                            message: "You must verify your account before logging in!"
+                        });                        
+                    }
                 } else { //doesn't match
-                    console.log("password does not match");
-                    cb(null, false);
+                    cb(null, false, {
+                        message: "You have entered an incorrect password!"
+                    });
                 }
             }).catch((error) => {
                 cb(error);
             })
         } else { //not found user
-            cb(null, false);
+            cb(null, false, {
+                message: "This user does not exist!"
+            });
         }
     }).catch((error) => {
         cb(error);

@@ -6,8 +6,16 @@ loginForm.addEventListener("submit", function(event) {
         username: document.getElementById("login-username").value,
         password: document.getElementById("login-password").value,
     }).then((resp) => {
-        console.log(resp);
-        window.location.href = "/"
+        if (resp.data) {
+            if (resp.data != "ok") {
+                $("#register-modal").modal("hide");
+                $("#errorModalTitle").text("An error occurred");
+                $("#errorModalText").text(resp.data);
+                $("#errorModal").modal("show");
+            } else {
+                window.location.href = "/"
+            }
+        }
     }).catch((error) => {
         console.log(error);
     });
