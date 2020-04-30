@@ -80,16 +80,16 @@ app.post("/register", function(req, res) {
                     res.send("ok");
                 }).catch((error) => {
                     res.status(500).send(error.message);
-                    console.log((error.message));
+                    console.log(error.message);
                 });
             }).catch((error) => {
                 res.status(500).send(error.message);
             });
         } else { //prevents registeration as user already exists
-            res.send("user already exists");
+            res.send("A user already exists with this email or username");
         }
     }).catch((error) => {
-        console.log((error.message));
+        console.log(error.message);
         res.status(500).send(error.message);
     });
 });
