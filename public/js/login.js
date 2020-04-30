@@ -20,8 +20,19 @@ registerForm.addEventListener("submit", function(event) {
         username: document.getElementById("register-username").value,
         password: document.getElementById("register-password").value,
     }).then((resp) => {
-        console.log(resp);
-        window.location.href = "/"
+        if (resp.data) {
+            if (resp.data != "ok") {
+                $("#register-modal").modal("hide");
+                $("#errorModalTitle").text("An error occurred");
+                $("#errorModalText").text(resp.data);
+                $("#errorModal").modal("show");
+            } else {
+                $("#register-modal").modal("hide");
+                $("#errorModalTitle").text("Account created");
+                $("#errorModalText").text("A confirmation email has been sent, please verify your account before logging in!");
+                $("#errorModal").modal("show");
+            }
+        }                
     }).catch((error) => {
         console.log(error);
     });
