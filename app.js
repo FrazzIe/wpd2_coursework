@@ -133,7 +133,9 @@ app.get("/projects", function (request, response) {
 
 //renders new-project.mustache to add a new project
 app.get('/projects/add', function(request, response) {
-    response.render("new-project", {'title':'Add a new Project'});
+    response.render("new-project", {
+		'title': 'Add a new Project'
+	});
     console.log("Render new project form"); 
 })
 
