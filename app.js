@@ -164,7 +164,7 @@ app.post('/edit/:project', function(request, response) {
 })
 
 //add post
-app.post('/add', function (request, response) {
+app.post('/project/add', function (request, response) {
     if (!request.body.project) {
         response.status(400).send("Project must be provided.");
         return;
