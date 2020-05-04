@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 var argon2 = require("argon2");
 var jwt = require("jsonwebtoken"); //import dependencies
 
-const DAO = require('../models/project.js');
+const DAO = require('./models/project.js');
 let projectDAO = new DAO();
 
 var app = express(); //init express app
