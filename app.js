@@ -114,18 +114,21 @@ app.post("/register", function(req, res) {
 });
 
 //renders all-projects.mustache to show all projects in the database
+//retrieve all projects
 app.get("/projects", function (request, response) {
-    projectDAO.getAllProjects() 
-        .then((list) => {
-            response.render("all-projects", { 
-                "title": 'My Projects',
-                "projects": list
-            }); 	
-            console.log("Render all projects page with:", list);
-        })
-        .catch((err) => {
-            console.log('Error retrieving all projects:', err);
-        });
+	if (request.isAuthenticated()) {
+		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
+			response.render("all-projects", { 
+				"title": 'My Projects',
+				"projects": result
+			});
+			console.log("Render all projects page with:", result);
+		}).catch((error) => {
+			console.log('Error retrieving all projects:', error.message);
+		});
+	} else {
+		response.render("login");
+	}
 });
 
 //renders new-project.mustache to add a new project
