@@ -132,19 +132,19 @@ app.get("/projects", function (request, response) {
 });
 
 //renders new-project.mustache to add a new project
-app.get('/project/add', function(request, response) {
+app.get('/projects/add', function(request, response) {
     response.render("new-project", {'title':'Add a new Project'});
     console.log("Render new project form"); 
 })
 
 //for when user clicks the delete link with argument request.params.project
-app.get('/project/delete/:project', function(request, response) {
+app.get('/projects/delete/:project', function(request, response) {
     projectDAO.deleteProject(request.params.project);
     response.redirect("/projects"); 
 })
 
 //for when user clicks the edit link, edit-projects.mustache is rendered
-app.get('/project/edit/:project', function(request, response) {
+app.get('/projects/edit/:project', function(request, response) {
     projectDAO.getOneProject(request.params.project)
     .then((list) => {
         response.render("edit-project", {
@@ -158,13 +158,13 @@ app.get('/project/edit/:project', function(request, response) {
 })
 
 //edit post
-app.post('/project/edit/:project', function(request, response) {
+app.post('/projects/edit/:project', function(request, response) {
     projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
     response.redirect("/projects");
 })
 
 //add post
-app.post('/project/add', function (request, response) {
+app.post('/projects/add', function (request, response) {
     if (!request.body.project) {
         response.status(400).send("Project must be provided.");
         return;
