@@ -1,0 +1,38 @@
+<html lang="en">
+
+<head>
+    {{>header}}
+</head>
+
+<body class="container">
+
+    <h1 class="display-4">{{title}}</h1>
+    <h2 class="display-4">Milestones</h1>
+
+    <div class="text-right">
+        <a href="/add" class="btn btn-primary">
+            Add a new milestone
+        </a>
+    </div>
+
+    <div class="text-left" style="margin-bottom: 1em;">
+        {{#milestones}}
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                Milestone: {{milestone}}
+                <a href="delete/{{milestone}}"><i class="fa fa-trash fa-lg"></i></a>
+                <a href="edit/{{milestone}}"><i class="fa fa-edit fa-lg"></i></a>
+                </div>
+                <div class="card-text">
+                    <div class="card-title">Completed: {{module}} </div>
+                </div>
+            </div>
+        </div>
+        {{/milestones}}
+    </div>
+    
+    {{>footer}}
+</body>
+
+</html> 
