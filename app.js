@@ -149,7 +149,7 @@ app.get('/edit/:project', function(request, response) {
     .then((list) => {
         response.render("edit-project", {
             "title": "Edit Project",
-            "item":list
+            "item": list
         });
     })
     .catch((err) => {
