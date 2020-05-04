@@ -158,7 +158,7 @@ app.get('/project/edit/:project', function(request, response) {
 })
 
 //edit post
-app.post('/edit/:project', function(request, response) {
+app.post('/project/edit/:project', function(request, response) {
     projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
     response.redirect("/projects");
 })
