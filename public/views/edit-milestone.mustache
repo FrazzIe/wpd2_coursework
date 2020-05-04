@@ -10,7 +10,7 @@
     <h2 class="display-4">Edit Milestone</h2> 
 
     <form method="post" role="form" >   
-    {{#item}}
+        {{#item}}
         <div class="form-group">
             <label for="project">Milestone: </label> 
             <input type="text" class="form-control-plaintext" id="milestone" name="milestone"  value="{{milestone}}" >
@@ -24,7 +24,7 @@
         <div class="form-group">
             <input type="submit" value="Save milestone details" class="btn btn-primary">
         </div>
-    {{/item}}
+        {{/item}}
     </form>
 
     {{>footer}}
