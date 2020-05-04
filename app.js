@@ -38,7 +38,10 @@ app.use(function(req, res, next) { //funcs to get url
 app.get("/", function(req, res) {
 	res.status(200);
 	if (req.isAuthenticated()) {
-		res.render("home");
+		res.render("home", {
+			username: req.user.username,
+			email: req.user.email
+		});
 	} else {
 		res.render("login");
 	}
