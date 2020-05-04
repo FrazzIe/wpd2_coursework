@@ -11,9 +11,6 @@ var bodyParser = require('body-parser');
 var argon2 = require("argon2");
 var jwt = require("jsonwebtoken"); //import dependencies
 
-const DAO = require('./models/project.js');
-let projectDAO = new DAO();
-
 var app = express(); //init express app
 
 app.engine("mustache", mustache(__dirname + "/public/views/partials"));
@@ -138,28 +135,31 @@ app.get('/projects/add', function(request, response) {
 })
 
 //for when user clicks the delete link with argument request.params.project
+//delete single project identified by id
 app.get('/projects/delete/:project', function(request, response) {
-    projectDAO.deleteProject(request.params.project);
+    // projectDAO.deleteProject(request.params.project);
     response.redirect("/projects"); 
 })
 
 //for when user clicks the edit link, edit-projects.mustache is rendered
+//retrieve one project by project id
 app.get('/projects/edit/:project', function(request, response) {
-    projectDAO.getOneProject(request.params.project)
-    .then((list) => {
-        response.render("edit-project", {
-            "title": "Edit Project",
-            "item": list
-        });
-    })
-    .catch((err) => {
-        console.log('Error getting project:', request.params.project, err);
-    });
+    // projectDAO.getOneProject(request.params.project)
+    // .then((list) => {
+    //     response.render("edit-project", {
+    //         "title": "Edit Project",
+    //         "item": list
+    //     });
+    // })
+    // .catch((err) => {
+    //     console.log('Error getting project:', request.params.project, err);
+    // });
 })
 
 //edit post
+//update details for a project
 app.post('/projects/edit/:project', function(request, response) {
-    projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+    // projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
     response.redirect("/projects");
 })
 
@@ -169,7 +169,7 @@ app.post('/projects/add', function (request, response) {
         response.status(400).send("Project must be provided.");
         return;
     }
-    projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+    // projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
     response.redirect("/projects");
 });
 
