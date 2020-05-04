@@ -138,7 +138,7 @@ app.get('/project/add', function(request, response) {
 })
 
 //for when user clicks the delete link with argument request.params.project
-app.get('/delete/:project', function(request, response) {
+app.get('/project/delete/:project', function(request, response) {
     projectDAO.deleteProject(request.params.project);
     response.redirect("/projects"); 
 })
