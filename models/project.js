@@ -1,5 +1,5 @@
 
-class DAO {
+class DAO { //Data Access Object (DAO). Class used to link to the underlying MySQL database
 
     constructor() {
 
