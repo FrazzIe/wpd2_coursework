@@ -11,6 +11,9 @@ var bodyParser = require('body-parser');
 var argon2 = require("argon2");
 var jwt = require("jsonwebtoken"); //import dependencies
 
+const DAO = require('../models/project.js');
+let projectDAO = new DAO();
+
 var app = express(); //init express app
 
 app.engine("mustache", mustache(__dirname + "/public/views/partials"));
@@ -112,6 +115,64 @@ app.post("/register", function(req, res) {
 		res.status(500).send(error.message);
 	});
 });
+
+//renders all-projects.mustache to show all projects in the database
+app.get("/projects", function (request, response) {
+    projectDAO.getAllProjects() 
+        .then((list) => {
+            response.render("all-projects", { 
+                "title": 'My Projects',
+                "projects": list
+            }); 	
+            console.log("Render all projects page with:", list);
+        })
+        .catch((err) => {
+            console.log('Error retrieving all projects:', err);
+        });
+});
+
+//renders new-project.mustache to add a new project
+app.get('/add', function(request, response) {
+    response.render("new-project", {'title':'Add a new Project'});
+    console.log("Render new project form"); 
+})
+
+//for when user clicks the delete link with argument request.params.project
+app.get('/delete/:project', function(request, response) {
+    projectDAO.deleteProject(request.params.project);
+    response.redirect("/projects"); 
+})
+
+//for when user clicks the edit link, edit-projects.mustache is rendered
+app.get('/edit/:project', function(request, response) {
+    projectDAO.getOneProject(request.params.project)
+    .then((list) => {
+        response.render("edit-project", {
+            "title": "Edit Project",
+            "item":list
+        });
+    })
+    .catch((err) => {
+        console.log('Error getting project:', request.params.project, err);
+    });
+})
+
+//edit post
+app.post('/edit/:project', function(request, response) {
+    projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+    response.redirect("/projects");
+})
+
+//add post
+app.post('/add', function (request, response) {
+    if (!request.body.project) {
+        response.status(400).send("Project must be provided.");
+        return;
+    }
+    projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+    response.redirect("/projects");
+});
+
 
 app.listen(config.app.port, () => { //make app listen for port
 	console.log("Coursework scheduler listening on port " + config.app.port);
