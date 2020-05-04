@@ -144,7 +144,7 @@ app.get('/project/delete/:project', function(request, response) {
 })
 
 //for when user clicks the edit link, edit-projects.mustache is rendered
-app.get('/edit/:project', function(request, response) {
+app.get('/project/edit/:project', function(request, response) {
     projectDAO.getOneProject(request.params.project)
     .then((list) => {
         response.render("edit-project", {
