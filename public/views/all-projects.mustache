@@ -6,10 +6,9 @@
 
 <body class="container">
 
-  <h1 class="display-4">{{title}}</h1>
-  <h2 class="display-4">My Projects</h1>
+  <h1 class="display-4">{{ title }}</h1>
     <div class="text-right">
-      <a href="/add" class="btn btn-primary">
+      <a href="/project/add" class="btn btn-primary">
         Add a new project
       </a>
     </div>
@@ -20,17 +19,17 @@
       <div class="card">
         <div class="card-body">
           <div class="card-title">
-            Project: {{project}}
+            Project: {{ title }}
 
-            <a href="project/delete/{{project}}"><i class="fa fa-trash fa-lg"></i></a>
+            <a href="/project/delete/{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
 
-            <a href="project/edit/{{project}}"><i class="fa fa-edit fa-lg"></i></a>
+            <a href="/project/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
 
           </div>
           <div class="card-text">
-            <div class="card-title">Module: {{module}} </div>
-            <div class="card-text">Intended Due Date: {{intendedDate}} </div>
-            <div class="card-text">Actual Completion Date: {{actualDate}} </div>
+            <div class="card-title">Module: {{ module }} </div>
+            <div class="card-text">Intended Due Date: {{ due_date }} </div>
+            <div class="card-text">Actual Completion Date: {{ end_date }} </div>
           </div>
         </div>
       </div>
