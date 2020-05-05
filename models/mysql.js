@@ -13,6 +13,7 @@ var queries = { //list of mysql queries
     getProject: "SELECT id, title, module, DATE_FORMAT(end_date, '%Y-%m-%d') AS 'end_date', DATE_FORMAT(due_date, '%Y-%m-%d') AS 'due_date' FROM projects WHERE id = ? AND user_id = ?",
     editProject: "UPDATE projects SET title = ?, module = ?, end_date = ?, due_date = ? WHERE id = ? AND user_id = ?",
     deleteProject: "DELETE FROM projects WHERE id = ? AND user_id = ?",
+    getMilestones: "SELECT id, project_id, title, description, completed_at FROM milestones WHERE project_id = ?",
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
