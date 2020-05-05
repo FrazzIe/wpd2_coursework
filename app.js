@@ -119,8 +119,8 @@ app.get("/projects", function (request, response) {
 	if (request.isAuthenticated()) {
 		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
 			response.render("all-projects", { 
-				"username": req.user.username,
-				"email": req.user.email,
+				"username": request.user.username,
+				"email": request.user.email,
 				"title": 'My Projects',
 				"projects": "active",
 				"items": result
@@ -138,6 +138,9 @@ app.get("/projects", function (request, response) {
 app.get('/projects/add', function(request, response) {
 	if (request.isAuthenticated()) {
 		response.render("new-project", {
+			"username": request.user.username,
+			"email": request.user.email,
+			"projects": "active",
 			'title': 'Add a new Project'
 		});
 		console.log("Render new project form"); 
@@ -186,6 +189,9 @@ app.get('/projects/edit/:project', function(request, response) {
 				request.redirect("/projects");
 			} else {
 				response.render("edit-project", {
+					"username": request.user.username,
+					"email": request.user.email,
+					"projects": "active",
 					"title": "Edit Project",
 					"item": result
 				});
