@@ -1,42 +1,55 @@
 <html lang="en">
 
-<head>
-  {{>header}}
-</head>
+  <head>
+    {{>header}}
+  </head>
 
-<body class="container">
+  <body class="container">
 
-  <h1 class="display-4">{{ title }}</h1>
-    <div class="text-right">
-      <a href="/projects/add" class="btn btn-primary">
-        Add a new project
-      </a>
-    </div>
-
-    <div class="text-left" style="margin-bottom: 1em;">
-
-      {{#projects}}
-      <div class="card">
-        <div class="card-body">
-          <div class="card-title">
-            Project: {{ title }}
-
-            <a href="/projects/delete/{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
-
-            <a href="/projects/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
-
-          </div>
-          <div class="card-text">
-            <div class="card-title">Module: {{ module }} </div>
-            <div class="card-text">Intended Due Date: {{ due_date }} </div>
-            <div class="card-text">Actual Completion Date: {{ end_date }} </div>
-          </div>
+    <h1 class="display-4">{{ title }}</h1>
+  
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="text-right">
+          <a href="/projects/add" class="btn btn-primary">
+            Add a new project
+          </a>
         </div>
       </div>
-      {{/projects}}
-
     </div>
-  {{>footer}}
-</body>
+
+    <div class="row">
+      {{#projects}}
+      
+        <div class="col-sm-12">
+          <div class="text-left" style="margin-bottom: 1em;">
+            <div class="card">
+              <div class="card-body">
+                <div class="card-title">
+                  <div class="row align-items-center">
+                    <div class="col-sm-11">
+                      Project: {{ title }}
+                    </div>
+                    <div class="col-sm-1">
+                      <a href="/projects/delete/{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
+
+                      <a href="/projects/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-text">
+                  <div class="card-title">Module: {{ module }} </div>
+                  <div class="card-text">Intended Due Date: {{ due_date }} </div>
+                  <div class="card-text">Actual Completion Date: {{ end_date }} </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {{/projects}}
+    </div>
+    {{>footer}}
+  </body>
 
 </html>
