@@ -18,7 +18,7 @@ var queries = { //list of mysql queries
     getMilestone: "SELECT milestones.id, milestones.project_id, milestones.title, milestones.description FROM milestones JOIN projects ON (milestones.project_id = projects.id) WHERE milestones.id = ? AND projects.user_id = ?",
     editMilestone: "UPDATE milestones JOIN projects ON (milestones.project_id = projects.id) SET milestones.title = ?, milestones.description = ? WHERE milestones.id = ? AND projects.user_id = ?",
     deleteMilestone: "DELETE FROM milestones WHERE milestones.id = ? AND (SELECT projects.user_id FROM projects WHERE projects.id = ?) = ?",
-    completeMilestone: "UPDATE milestone JOIN projects ON (milestones.project_id = projects.id) SET completed_at = ? WHERE milestones.id = ? AND projects.user_id = ?"
+    completeMilestone: "UPDATE milestones JOIN projects ON (milestones.project_id = projects.id) SET completed_at = ? WHERE milestones.id = ? AND projects.user_id = ?"
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
