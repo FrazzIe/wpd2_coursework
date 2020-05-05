@@ -116,17 +116,17 @@ app.post("/register", function(req, res) {
 //renders all-milestones.mustache to show all milestones for the project
 //retrieve all of the project's milestones
 //added ':project' to alter url (?) (also for add, delete, and edit)
-app.get("/milestones:project", function (request, response) {
+app.get("/milestones/:project", function (request, response) {
 	if (request.isAuthenticated()) {
 		//changed request user id to project id, not sure if this is correct (would likely have to be taken from url)
-		mysql.query(mysql.queries.getMilestones, [request.project.id]).then((result) => {
+		mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((result) => {
 			response.render("all-milestones", { 
 				"title": 'Milestones',
 				"milestones": result
 			});
-			console.log("Render all milestones page with:", result);
+			console.log("Render all milestones page with: ", result);
 		}).catch((error) => {
-			console.log('Error retrieving project milestones:', error.message);
+			console.log('Error retrieving project milestones: ', error.message);
 		});
 	} else {
 		response.render("login");
@@ -134,14 +134,14 @@ app.get("/milestones:project", function (request, response) {
 });
 
 //renders new-milestone.mustache to add a new milestone
-app.get('/milestones:project/add', function(request, response) {
+app.get('/milestones/:project/add', function(request, response) {
     response.render("new-milestone", {'title':'Add a new Milestone'});
     console.log("Render new milestone form"); 
 })
 
 //for when user clicks the edit milestone link, edit-milestones.mustache is rendered
 //retrieve one milestone by project id
-app.get('/milestones:project/edit/:milestone', function(request, response) {
+app.get('/milestones/:project/edit/:milestone', function(request, response) {
     //get a single milestone
         response.render("edit-milestone", {
             "title": "Edit Milestone",
@@ -149,7 +149,6 @@ app.get('/milestones:project/edit/:milestone', function(request, response) {
         });
     //error msg
         console.log('Error getting milestone:', request.params.milestone, err);
-
 })
 
 //milestones functionality still needs delete
