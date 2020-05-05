@@ -153,6 +153,32 @@ app.get('/projects/delete/:project', function(request, response) {
 //for when user clicks the edit link, edit-projects.mustache is rendered
 //retrieve one project by project id
 app.get('/projects/edit/:project', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project) { //check if param exists
+			response.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			response.redirect("/projects");
+			return;
+		}
+
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => { //fetch project
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				request.redirect("/projects");
+			} else {
+				console.log(result[0].due_date)
+				console.log(result[0].end_date)
+				response.render("edit-project", {
+					"title": "Edit Project",
+					"item": result
+				});
+			}
+		}).catch((error) => {
+			console.log('Error getting project:', request.params.project, error.message);
+		});
+	} else {
+		response.render("login");
+	}
     // projectDAO.getOneProject(request.params.project)
     // .then((list) => {
     //     response.render("edit-project", {
