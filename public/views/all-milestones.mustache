@@ -13,15 +13,15 @@
                 </div>
                 <div class="col-sm-1">
                     <div class="text-right">
-                        <a href="#" data-toggle="modal" data-target="#delete-modal-{{ project.id }}"><i class="fa fa-trash fa-lg"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#project-delete-modal-{{ project.id }}"><i class="fa fa-trash fa-lg"></i></a>
 
                         <a href="/projects/edit/{{ project.id }}"><i class="fa fa-edit fa-lg"></i></a>
 
-                        <div class="modal fade" id="delete-modal-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+                        <div class="modal fade" id="project-delete-modal-{{ project.id }}" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h6 class="modal-title">Are you sure you want to delete project {{ title }}?</h6>
+                                        <h6 class="modal-title">Are you sure you want to delete project {{ project.title }}?</h6>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -34,7 +34,7 @@
                                         </h5>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="/projects/delete/{{ id }}" class="btn btn-danger">
+                                        <a href="/projects/delete/{{ project.id }}" class="btn btn-danger">
                                             Delete
                                         </a>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -75,7 +75,7 @@
                 </div>
                 <div class="col-sm-2">
                     <div class="text-right">
-                        <a href="/add" class="btn btn-primary">
+                        <a href="/{{ project.id }}/add" class="btn btn-primary">
                             Add a new milestone
                         </a>
                     </div>
@@ -99,8 +99,8 @@
                                         </div>
                                         <div class="col-sm-2">
                                             <a href="#" data-toggle="modal" data-target="#delete-modal-{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
-                                            <a href="/milestones/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
-                                            <a href="/milestones/complete/{{ id }}"><i class="fa fa-check-circle fa-lg"></i></a>
+                                            <a href="/milestones/{{ project.id }}/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+                                            <a href="/milestones/{{ project.id }}/complete/{{ id }}"><i class="fa fa-check-circle fa-lg"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                                         </h5>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="/milestones/delete/{{ id }}" class="btn btn-danger">
+                                        <a href="/milestones/{{ project.id }}/delete/{{ id }}" class="btn btn-danger">
                                             Delete
                                         </a>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -157,7 +157,7 @@
                                         </div>
                                         <div class="col-sm-1">
                                             <a href="#" data-toggle="modal" data-target="#delete-modal-{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
-                                            <a href="/milestones/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+                                            <a href="/milestones/{{ project.id }}/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -185,7 +185,7 @@
                                         </h5>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="/milestones/delete/{{ id }}" class="btn btn-danger">
+                                        <a href="/milestones/{{ project.id }}/delete/{{ id }}" class="btn btn-danger">
                                             Delete
                                         </a>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
