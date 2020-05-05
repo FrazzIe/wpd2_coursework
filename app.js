@@ -133,10 +133,14 @@ app.get("/projects", function (request, response) {
 
 //renders new-project.mustache to add a new project
 app.get('/projects/add', function(request, response) {
-    response.render("new-project", {
-		'title': 'Add a new Project'
-	});
-    console.log("Render new project form"); 
+	if (request.isAuthenticated()) {
+		response.render("new-project", {
+			'title': 'Add a new Project'
+		});
+		console.log("Render new project form"); 
+	} else {
+		response.render("login");
+	}
 })
 
 //for when user clicks the delete link with argument request.params.project
