@@ -431,6 +431,30 @@ app.get('/milestones/:project/delete/:milestone', function(request, response) {
 	}
 })
 
+//for when user clicks the complete milestone link
+//moves a milestone to the completed category
+app.get('/milestones/:project/complete/:milestone', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		//var currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    	mysql.query(mysql.queries.completeMilestone, ["CURRENT_DATE()", request.params.milestone, request.user.id]).then((result) => { //delete milestone
+			response.redirect("/milestones/" + request.params.project);
+		}).catch((error) => {
+			console.log('Error deleting milestone: ', request.params.milestone, error.message);
+			response.redirect("/milestones/" + request.params.project);
+		});
+	} else {
+		response.render("login");
+	}
+})
 app.listen(config.app.port, () => { //make app listen for port
 	console.log("Coursework scheduler listening on port " + config.app.port);
 })
