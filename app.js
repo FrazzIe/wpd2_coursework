@@ -119,8 +119,11 @@ app.get("/projects", function (request, response) {
 	if (request.isAuthenticated()) {
 		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
 			response.render("all-projects", { 
+				"username": req.user.username,
+				"email": req.user.email,
 				"title": 'My Projects',
-				"projects": result
+				"projects": "active",
+				"items": result
 			});
 			console.log("Render all projects page with:", result);
 		}).catch((error) => {
