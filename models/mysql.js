@@ -8,6 +8,11 @@ var queries = { //list of mysql queries
     getUser: "SELECT users.id, users.username, users.email, users.password, UNIX_TIMESTAMP(users.created_at), users.confirmed FROM users WHERE users.id = ?",
     createUser: "INSERT INTO users (`username`, `email`, `password`) VALUES (?, ?, ?)",
     activateUser: "UPDATE users SET confirmed = 1 WHERE id = ?",
+    getProjects: "SELECT id, title, module, DATE_FORMAT(end_date, '%M %D %Y') AS 'end_date', DATE_FORMAT(due_date, '%M %D %Y') AS 'due_date' FROM projects WHERE user_id = ?",
+    createProject: "INSERT INTO projects (`user_id`, `title`, `module`, `end_date`, `due_date`) VALUES (?, ?, ?, ?, ?)",
+    getProject: "SELECT id, title, module, DATE_FORMAT(end_date, '%Y-%m-%d') AS 'end_date', DATE_FORMAT(due_date, '%Y-%m-%d') AS 'due_date' FROM projects WHERE id = ? AND user_id = ?",
+    editProject: "UPDATE projects SET title = ?, module = ?, end_date = ?, due_date = ? WHERE id = ? AND user_id = ?",
+    deleteProject: "DELETE FROM projects WHERE id = ? AND user_id = ?",
 }
 
 function execute(sql, params) { //Asynchronous sql execute function

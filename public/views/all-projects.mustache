@@ -1,0 +1,83 @@
+<html lang="en">
+
+	<head>
+		{{>header}}
+	</head>
+
+	<body>
+		{{>nav}}
+		<div class="container">
+			<h1 class="display-4">{{ title }}</h1>
+		
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="text-right">
+						<a href="/projects/add" class="btn btn-primary">
+							Add a new project
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				{{#items}}
+				
+					<div class="col-sm-12">
+						<div class="text-left" style="margin-bottom: 1em;">
+							<div class="card">
+								<div class="card-body">
+									<div class="card-title">
+										<div class="row align-items-center">
+											<div class="col-sm-11">
+												Project: {{ title }}
+											</div>
+											<div class="col-sm-1">
+												<a href="#" data-toggle="modal" data-target="#delete-modal-{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
+
+												<a href="/projects/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+											</div>
+										</div>
+									</div>
+									<div class="card-text">
+										<div class="card-title">Module: {{ module }} </div>
+										<div class="card-text">Intended Due Date: {{ due_date }} </div>
+										<div class="card-text">Actual Completion Date: {{ end_date }} </div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Very lazy way to do this -->
+					<div class="modal fade" id="delete-modal-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h6 class="modal-title">Are you sure you want to delete project {{ title }}?</h6>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<h5>
+										<small>
+											This action cannot be undone.
+										</small>
+									</h5>
+								</div>
+								<div class="modal-footer">
+									<a href="/projects/delete/{{ id }}" class="btn btn-danger">
+										Delete
+									</a>
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				{{/items}}
+			</div>
+		</div>
+		{{>footer}}
+	</body>
+
+</html>
