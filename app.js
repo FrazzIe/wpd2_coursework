@@ -298,8 +298,23 @@ app.get("/milestones/:project", function (request, response) {
 
 //renders new-milestone.mustache to add a new milestone
 app.get('/milestones/:project/add', function(request, response) {
-    response.render("new-milestone", {'title':'Add a new Milestone'});
-    console.log("Render new milestone form"); 
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		response.render("new-milestone", {
+			'title': 'Add a new Milestone',
+			'project_id': request.params.project
+		});
+		console.log("Render new milestone form"); 
+	} else {
+		response.render("login");
+	}
 })
 
 //for when user clicks the edit milestone link, edit-milestones.mustache is rendered
