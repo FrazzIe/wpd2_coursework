@@ -270,6 +270,11 @@ app.get("/milestones/:project", function (request, response) {
 		}).catch((error) => {
 			console.log('Error retrieving project milestones: ', error.message);
 			response.redirect("/projects");
+		});
+	} else {
+		request.render("login");
+	}
+})
 
 //renders new-milestone.mustache to add a new milestone
 app.get('/milestones/:project/add', function(request, response) {
