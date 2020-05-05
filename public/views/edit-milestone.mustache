@@ -1,31 +1,53 @@
 <html lang="en">
+	
+	<head>
+		{{>header}}
+	</head>
 
-<head>
-    {{>header}}
-</head>
+	<body>
+		{{>nav}}
+		<div class="container">
+			{{>alert}}
+			<h1 class="display-4">{{ title }}</h1>
 
-<body class="container">
+			<form id="edit-milestone-form" method="post" role="form" >   
 
-    <h1 class="display-4">{{title}}</h1>
-    <h2 class="display-4">Edit Milestone</h2> 
+				{{#item}}
+                    <input type="text" class="d-none" id="edit-milestone-project-id" value="{{ project_id }}" readonly>
+                    
+					<div class="form-group row">
+						<label for="edit-milestone-id" class="col-sm-2 col-form-label">ID</label>
+						<div class="col-sm-10">
+							<input type="text" readonly class="form-control-plaintext" id="edit-milestone-id" value="{{ id }}">
+						</div>
+					</div>
 
-    <form method="post" role="form" >   
-        {{#item}}
-        <div class="form-group">
-            <label for="milestone">Milestone: </label> 
-            <input type="text" class="form-control-plaintext" id="milestone" name="milestone"  value="{{milestone}}" >
-        </div>
+					<div class="form-group row">
+						<label for="edit-milestone-title" class="col-sm-2 col-form-label">Milestone name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-milestone-title" name="edit-milestone-title"  value="{{ title }}" >
+						</div>
+					</div>
 
-        <div class="form-group">
-            <label for="completed">Completed</label>
-            <input type="radio" class="form-control-plaintext" id="completed" name="completed" value="{{completed}}" >
-        </div>
+					<div class="form-group row">
+						<label for="edit-milestone-module" class="col-sm-2 col-form-label">Milestone description</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-milestone-module" name="edit-milestone-module" value="{{ description }}" >
+						</div>
+					</div>
 
-        <div class="form-group">
-            <input type="submit" value="Save milestone details" class="btn btn-primary">
-        </div>
-        {{/item}}
-    </form>
+					<div class="form-group row">
+						<div class="col-sm">
+							<input type="submit" value="Save milestone details" class="btn btn-primary">
+						</div>
+					</div>
 
-    {{>footer}}
-</body>
+				{{/item}}
+
+			</form>
+		</div>
+		{{>footer}}
+		<script src="/../../js/edit-milestone.js"></script>
+	</body>
+
+</html>
