@@ -127,6 +127,7 @@ app.get("/milestones/:project", function (request, response) {
 			console.log("Render all milestones page with: ", result);
 		}).catch((error) => {
 			console.log('Error retrieving project milestones: ', error.message);
+			response.redirect("/projects");
 		});
 	} else {
 		response.render("login");
