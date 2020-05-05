@@ -194,8 +194,29 @@ app.get('/projects/edit/:project', function(request, response) {
 //edit post
 //update details for a project
 app.post('/projects/edit/:project', function(request, response) {
-    // projectDAO.updateProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
-    response.redirect("/projects");
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Project title must be provided.");
+			return;
+		}
+
+		mysql.query(mysql.queries.editProject, [request.body.title, request.body.module, request.body.end_date, request.body.due_date, request.params.project, request.user.id]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error editing a project:', error.message);
+			response.send("There was an issue when trying to edit the project");
+		});
+	} else {
+		response.render("login");
+	}
 })
 
 //add post
