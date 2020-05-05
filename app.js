@@ -146,8 +146,24 @@ app.get('/projects/add', function(request, response) {
 //for when user clicks the delete link with argument request.params.project
 //delete single project identified by id
 app.get('/projects/delete/:project', function(request, response) {
-    // projectDAO.deleteProject(request.params.project);
-    response.redirect("/projects"); 
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project) { //check if param exists
+			response.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			response.redirect("/projects");
+			return;
+		}
+
+    	mysql.query(mysql.queries.deleteProject, [request.params.project, request.user.id]).then((result) => { //fetch project
+			response.redirect("/projects"); 
+		}).catch((error) => {
+			console.log('Error deleting project:', request.params.project, error.message);
+			response.redirect("/projects"); 
+		});
+	} else {
+		response.render("login");
+	}
 })
 
 //for when user clicks the edit link, edit-projects.mustache is rendered
