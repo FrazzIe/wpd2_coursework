@@ -380,6 +380,33 @@ app.get('/milestones/:project/edit/:milestone', function(request, response) {
 	}
 })
 
+//edit post
+//update details for a milestone
+app.post('/milestones/:project/edit/:milestone', function(request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Milestone title must be provided.");
+			return;
+		}
+
+		mysql.query(mysql.queries.editMilestone, [request.body.title, request.body.desc, request.params.milestone, request.user.id]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error editing a milestone: ', error.message);
+			response.send("There was an issue when trying to edit the milestone");
+		});
+	} else {
+		response.render("login");
+	}
+})
 //milestones functionality still needs delete
 
 app.listen(config.app.port, () => { //make app listen for port
