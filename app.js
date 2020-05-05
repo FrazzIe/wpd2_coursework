@@ -182,8 +182,6 @@ app.get('/projects/edit/:project', function(request, response) {
 			if (typeof result[0] === "undefined") { //if project doesn't exist
 				request.redirect("/projects");
 			} else {
-				console.log(result[0].due_date)
-				console.log(result[0].end_date)
 				response.render("edit-project", {
 					"title": "Edit Project",
 					"item": result
