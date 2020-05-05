@@ -174,12 +174,24 @@ app.post('/projects/edit/:project', function(request, response) {
 
 //add post
 app.post('/projects/add', function (request, response) {
-    if (!request.body.project) {
-        response.status(400).send("Project must be provided.");
-        return;
-    }
-    // projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
-    response.redirect("/projects");
+	if (request.isAuthenticated()) {
+		console.log(request.body);
+		if (!request.body.title) {
+			response.status(400).send("Project title must be provided.");
+			return;
+		}
+
+		console.log(request.body)
+		// projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+		mysql.query(mysql.queries.createProject, [request.user.id, request.body.title, request.body.module, request.body.end_date, request.body.due_date]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error creating a project:', error.message);
+			response.send("There was an issue when trying to create a project");
+		});
+	} else {
+		response.render("login");
+	}
 });
 
 
