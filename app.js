@@ -113,6 +113,148 @@ app.post("/register", function(req, res) {
 	});
 });
 
+//renders all-projects.mustache to show all projects in the database
+//retrieve all projects
+app.get("/projects", function (request, response) {
+	if (request.isAuthenticated()) {
+		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
+			response.render("all-projects", { 
+				"username": request.user.username,
+				"email": request.user.email,
+				"title": 'My Projects',
+				"projects": "active",
+				"items": result
+			});
+			console.log("Render all projects page with:", result);
+		}).catch((error) => {
+			console.log('Error retrieving all projects:', error.message);
+		});
+	} else {
+		response.render("login");
+	}
+});
+
+//renders new-project.mustache to add a new project
+app.get('/projects/add', function(request, response) {
+	if (request.isAuthenticated()) {
+		response.render("new-project", {
+			"username": request.user.username,
+			"email": request.user.email,
+			"projects": "active",
+			'title': 'Add a new Project'
+		});
+		console.log("Render new project form"); 
+	} else {
+		response.render("login");
+	}
+})
+
+//for when user clicks the delete link with argument request.params.project
+//delete single project identified by id
+app.get('/projects/delete/:project', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project) { //check if param exists
+			response.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			response.redirect("/projects");
+			return;
+		}
+
+    	mysql.query(mysql.queries.deleteProject, [request.params.project, request.user.id]).then((result) => { //fetch project
+			response.redirect("/projects"); 
+		}).catch((error) => {
+			console.log('Error deleting project:', request.params.project, error.message);
+			response.redirect("/projects"); 
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//for when user clicks the edit link, edit-projects.mustache is rendered
+//retrieve one project by project id
+app.get('/projects/edit/:project', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project) { //check if param exists
+			response.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			response.redirect("/projects");
+			return;
+		}
+
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => { //fetch project
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				request.redirect("/projects");
+			} else {
+				response.render("edit-project", {
+					"username": request.user.username,
+					"email": request.user.email,
+					"projects": "active",
+					"title": "Edit Project",
+					"item": result
+				});
+			}
+		}).catch((error) => {
+			console.log('Error getting project:', request.params.project, error.message);
+			response.redirect("/projects"); 
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//edit post
+//update details for a project
+app.post('/projects/edit/:project', function(request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Project title must be provided.");
+			return;
+		}
+
+		mysql.query(mysql.queries.editProject, [request.body.title, request.body.module, request.body.end_date, request.body.due_date, request.params.project, request.user.id]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error editing a project:', error.message);
+			response.send("There was an issue when trying to edit the project");
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//add post
+app.post('/projects/add', function (request, response) {
+	if (request.isAuthenticated()) {
+		console.log(request.body);
+		if (!request.body.title) {
+			response.status(400).send("Project title must be provided.");
+			return;
+		}
+
+		console.log(request.body)
+		// projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
+		mysql.query(mysql.queries.createProject, [request.user.id, request.body.title, request.body.module, request.body.end_date, request.body.due_date]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error creating a project:', error.message);
+			response.send("There was an issue when trying to create a project");
+		});
+	} else {
+		response.render("login");
+	}
+});
+
 //renders all-milestones.mustache to show all milestones for the project
 //retrieve all of the project's milestones
 //added ':project' to alter url (?) (also for add, delete, and edit)
@@ -128,11 +270,6 @@ app.get("/milestones/:project", function (request, response) {
 		}).catch((error) => {
 			console.log('Error retrieving project milestones: ', error.message);
 			response.redirect("/projects");
-		});
-	} else {
-		response.render("login");
-	}
-});
 
 //renders new-milestone.mustache to add a new milestone
 app.get('/milestones/:project/add', function(request, response) {
