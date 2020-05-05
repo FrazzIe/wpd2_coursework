@@ -1,38 +1,203 @@
 <html lang="en">
 
-<head>
-    {{>header}}
-</head>
+    <head>
+        {{>header}}
+    </head>
 
-<body class="container">
-
-    <h1 class="display-4">{{title}}</h1>
-    <h2 class="display-4">Milestones</h1>
-
-    <div class="text-right">
-        <a href="/add" class="btn btn-primary">
-            Add a new milestone
-        </a>
-    </div>
-
-    <div class="text-left" style="margin-bottom: 1em;">
-        {{#milestones}}
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">
-                    Milestone: {{milestone}}
-                    <a href="delete/{{milestone}}"><i class="fa fa-trash fa-lg"></i></a>
-                    <a href="edit/{{milestone}}"><i class="fa fa-edit fa-lg"></i></a>
+    <body>
+        {{>nav}}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-sm-11">
+                    <h3 class="display-4">Project: {{ project.title }}</h3>
                 </div>
-                <div class="card-text">
-                    <div class="card-title">Completed: {{completed}} </div>
+                <div class="col-sm-1">
+                    <div class="text-right">
+                        <a href="#" data-toggle="modal" data-target="#delete-modal-{{ project.id }}"><i class="fa fa-trash fa-lg"></i></a>
+
+                        <a href="/projects/edit/{{ project.id }}"><i class="fa fa-edit fa-lg"></i></a>
+
+                        <div class="modal fade" id="delete-modal-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title">Are you sure you want to delete project {{ title }}?</h6>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>
+                                            <small>
+                                                This action cannot be undone.
+                                            </small>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="/projects/delete/{{ id }}" class="btn btn-danger">
+                                            Delete
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        {{/milestones}}
-    </div>
 
-    {{>footer}}
-</body>
+            <form>   
+                <div class="form-group row align-items-center">
+                    <label class="col-sm-2 col-form-label">Module</label>
+                    <div class="col-sm-10">
+                        {{ project.module }}
+                    </div>
+                </div>
+
+                <div class="form-group row align-items-center">
+                    <label class="col-sm-2 col-form-label">Intended Due Date</label>
+                    <div class="col-sm-10">
+                        {{ project.end_date }}
+                    </div>
+                </div>
+
+                <div class="form-group row align-items-center">
+                    <label class="col-sm-2 col-form-label">Actual Due Date</label>
+                    <div class="col-sm-10">
+                        {{ project.due_date }}
+                    </div>
+                </div>
+            </form>
+
+            <div class="row align-items-center">
+                <div class="col-sm-10">
+                    <h3 class="display-4">{{ title }}</h3>
+                </div>
+                <div class="col-sm-2">
+                    <div class="text-right">
+                        <a href="/add" class="btn btn-primary">
+                            Add a new milestone
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <h3>Active</h3>
+            </div>
+
+            <div class="row align-items-center">
+
+                {{#uMilestones}}
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-10">
+                                            {{ title }}
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <a href="#" data-toggle="modal" data-target="#delete-modal-{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
+                                            <a href="/milestones/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+                                            <a href="/milestones/complete/{{ id }}"><i class="fa fa-check-circle fa-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-text">
+                                    {{ description }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Very lazy way to do this -->
+                        <div class="modal fade" id="delete-modal-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title">Are you sure you want to delete project {{ title }}?</h6>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>
+                                            <small>
+                                                This action cannot be undone.
+                                            </small>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="/milestones/delete/{{ id }}" class="btn btn-danger">
+                                            Delete
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/uMilestones}}
+            </div>
+
+            <div class="row align-items-center">
+                <h3>Completed</h3>
+            </div>
+
+            <div class="row align-items-center">
+
+                {{#cMilestones}}
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-10">
+                                            {{ title }}
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <a href="#" data-toggle="modal" data-target="#delete-modal-{{ id }}"><i class="fa fa-trash fa-lg"></i></a>
+                                            <a href="/milestones/edit/{{ id }}"><i class="fa fa-edit fa-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-text">
+                                    {{ description }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Very lazy way to do this -->
+                        <div class="modal fade" id="delete-modal-{{ id }}" tabindex="-1" role="dialog" aria-labelledby="delete-modal-{{ id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title">Are you sure you want to delete project {{ title }}?</h6>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>
+                                            <small>
+                                                This action cannot be undone.
+                                            </small>
+                                        </h5>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="/milestones/delete/{{ id }}" class="btn btn-danger">
+                                            Delete
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/cMilestones}}
+            </div>
+        </div>
+        {{>footer}}
+    </body>
 
 </html> 
