@@ -260,7 +260,6 @@ app.post('/projects/add', function (request, response) {
 //added ':project' to alter url (?) (also for add, delete, and edit)
 app.get("/milestones/:project", function (request, response) {
 	if (request.isAuthenticated()) {
-		//changed request user id to project id, not sure if this is correct (would likely have to be taken from url)
 		mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((result) => {
 			response.render("all-milestones", { 
 				"title": 'Milestones',
@@ -272,7 +271,7 @@ app.get("/milestones/:project", function (request, response) {
 			response.redirect("/projects");
 		});
 	} else {
-		request.render("login");
+		response.render("login");
 	}
 })
 
