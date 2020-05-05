@@ -14,6 +14,7 @@ var queries = { //list of mysql queries
     editProject: "UPDATE projects SET title = ?, module = ?, end_date = ?, due_date = ? WHERE id = ? AND user_id = ?",
     deleteProject: "DELETE FROM projects WHERE id = ? AND user_id = ?",
     getMilestones: "SELECT id, project_id, title, description, completed_at FROM milestones WHERE project_id = ?",
+    createMilestone: "INSERT INTO milestones (`project_id`, `title`, `description`) VALUES (?, ?, ?)",
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
