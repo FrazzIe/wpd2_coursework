@@ -356,13 +356,28 @@ app.post('/milestones/:project/add', function (request, response) {
 //for when user clicks the edit milestone link, edit-milestones.mustache is rendered
 //retrieve one milestone by project id
 app.get('/milestones/:project/edit/:milestone', function(request, response) {
-    //get a single milestone
-        response.render("edit-milestone", {
-            "title": "Edit Milestone",
-            "item": list
-        });
-    //error msg
-        console.log('Error getting milestone:', request.params.milestone, err);
+	if (request.isAuthenticated()) {
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		//get a single milestone
+		mysql.query(mysql.queries.getMilestone, [request.params.milestone, request.user.id]).then((result) => {
+			response.render("edit-milestone", {
+				"title": "Edit Milestone",
+				"item": result
+			});
+		}).catch((error) => {
+			console.log('Error getting milestone:', request.params.milestone, error.message);
+			response.redirect("/milestones/" + request.params.project); 			
+		});
+	} else {
+		response.render("login");
+	}
 })
 
 //milestones functionality still needs delete
