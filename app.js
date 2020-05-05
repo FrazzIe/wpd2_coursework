@@ -317,6 +317,42 @@ app.get('/milestones/:project/add', function(request, response) {
 	}
 })
 
+app.post('/milestones/:project/add', function (request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Milestone title must be provided.");
+			return;
+		}
+
+		//make sure this project belongs to the user
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				response.send("The project you were creating this milestone for does not belong to you");
+			} else {
+				mysql.query(mysql.queries.createMilestone, [request.params.project, request.body.title, request.body.desc]).then((result) => {
+					response.send("ok");
+				}).catch((error) => {
+					console.log('Error creating a milestone: ', error.message);
+					response.send("There was an issue when trying to create a milestone");
+				});
+			}
+		}).catch((error) => {
+			console.log("Error retrieving project: ", error.message);
+			response.send("The project you were creating this milestone for does not exist");
+		});
+	} else {
+		response.render("login");
+	}
+});
+
 //for when user clicks the edit milestone link, edit-milestones.mustache is rendered
 //retrieve one milestone by project id
 app.get('/milestones/:project/edit/:milestone', function(request, response) {
