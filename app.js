@@ -179,16 +179,6 @@ app.get('/projects/edit/:project', function(request, response) {
 	} else {
 		response.render("login");
 	}
-    // projectDAO.getOneProject(request.params.project)
-    // .then((list) => {
-    //     response.render("edit-project", {
-    //         "title": "Edit Project",
-    //         "item": list
-    //     });
-    // })
-    // .catch((err) => {
-    //     console.log('Error getting project:', request.params.project, err);
-    // });
 })
 
 //edit post
