@@ -260,14 +260,33 @@ app.post('/projects/add', function (request, response) {
 //added ':project' to alter url (?) (also for add, delete, and edit)
 app.get("/milestones/:project", function (request, response) {
 	if (request.isAuthenticated()) {
-		mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((result) => {
-			response.render("all-milestones", { 
-				"title": 'Milestones',
-				"milestones": result
-			});
-			console.log("Render all milestones page with: ", result);
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				request.redirect("/projects");
+			} else {
+				mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((milestones) => {
+					response.render("all-milestones", { 
+						"title": 'Milestones',
+						"project": result[0],
+						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
+						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)
+					});
+					console.log("Render all milestones page with: ", result);
+				}).catch((error) => {
+					console.log('Error retrieving project milestones: ', error.message);
+					response.redirect("/projects");
+				});
+			}
 		}).catch((error) => {
-			console.log('Error retrieving project milestones: ', error.message);
+			console.log("Error retrieving project: ", error.message);
 			response.redirect("/projects");
 		});
 	} else {
