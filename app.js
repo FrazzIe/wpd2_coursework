@@ -189,6 +189,7 @@ app.get('/projects/edit/:project', function(request, response) {
 			}
 		}).catch((error) => {
 			console.log('Error getting project:', request.params.project, error.message);
+			response.redirect("/projects"); 
 		});
 	} else {
 		response.render("login");
