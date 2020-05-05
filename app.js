@@ -273,7 +273,9 @@ app.get("/milestones/:project", function (request, response) {
 				request.redirect("/projects");
 			} else {
 				mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((milestones) => {
-					response.render("all-milestones", { 
+					response.render("all-milestones", {
+						"username": request.user.username,
+						"email": request.user.email,
 						"title": 'Milestones',
 						"project": result[0],
 						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
