@@ -47,6 +47,7 @@ app.get("/", function(req, res) {
 							email: req.user.email
 						}
 					],
+					title: "Home",
 					projects: projects,
 					milestones: milestones
 				});
@@ -59,7 +60,9 @@ app.get("/", function(req, res) {
 			console.log(error.message);
 		});
 	} else {
-		res.render("login");
+		res.render("login", {
+			title: "Login",
+		});
 	}
 })
 
@@ -143,7 +146,7 @@ app.get("/projects", function (request, response) {
 			console.log('Error retrieving all projects:', error.message);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -161,7 +164,7 @@ app.get('/projects/add', function(request, response) {
 			'title': 'Add a new Project'
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -184,7 +187,7 @@ app.get('/projects/delete/:project', function(request, response) {
 			response.redirect("/projects"); 
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -221,7 +224,7 @@ app.get('/projects/edit/:project', function(request, response) {
 			response.redirect("/projects"); 
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -249,7 +252,7 @@ app.post('/projects/edit/:project', function(request, response) {
 			response.send("There was an issue when trying to edit the project");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -268,7 +271,7 @@ app.post('/projects/add', function (request, response) {
 			response.send("There was an issue when trying to create a project");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -312,7 +315,7 @@ app.get("/milestones/:project", function (request, response) {
 			response.redirect("/projects");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -332,7 +335,7 @@ app.get('/milestones/:project/add', function(request, response) {
 			'project_id': request.params.project
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -368,7 +371,7 @@ app.post('/milestones/:project/add', function (request, response) {
 			response.send("The project you were creating this milestone for does not exist");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -401,7 +404,7 @@ app.get('/milestones/:project/edit/:milestone', function(request, response) {
 			response.redirect("/milestones/" + request.params.project); 			
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -429,7 +432,7 @@ app.post('/milestones/:project/edit/:milestone', function(request, response) {
 			response.send("There was an issue when trying to edit the milestone");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -452,7 +455,7 @@ app.get('/milestones/:project/delete/:milestone', function(request, response) {
 			response.redirect("/milestones/" + request.params.project);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -477,7 +480,7 @@ app.get('/milestones/:project/complete/:milestone', function(request, response) 
 			response.redirect("/milestones/" + request.params.project);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -493,6 +496,7 @@ app.get("/verify/:token", function(req, res) { //handles email verficiation toke
 		});       
 	} catch(e) {
 		console.log(e.message);
+		res.redirect("/");
 	}
 });
 
@@ -520,7 +524,7 @@ app.post("/projects/share/:project", function(req, res) {
 			res.send({ url: req.getUrl() + "/view/" + token	})
 		});
 	} else {
-		res.render("login");
+		res.redirect("/");
 	}
 })
 
@@ -534,7 +538,7 @@ app.get("/view/:token", function(req, res) {
 			} else {
 				mysql.query(mysql.queries.getMilestones, [data.project, data.id]).then((milestones) => {
 					var resObj = {
-						"title": "Milestones",
+						"title": "Project Overview",
 						"project": result[0],
 						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
 						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)						
@@ -561,6 +565,7 @@ app.get("/view/:token", function(req, res) {
 		});
 	} catch(e) {
 		console.log(e.message);
+		res.redirect("/");
 	}
 });
 
