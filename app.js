@@ -517,7 +517,6 @@ app.get("/verify/:token", function(req, res) { //handles email verficiation toke
 });
 
 app.post("/projects/share/:project", function(req, res) {
-	console.log("hello")
 	if (req.isAuthenticated()) {
 		if (!req.params.project) { //check if param exists
 			req.redirect("/projects");
@@ -528,7 +527,8 @@ app.post("/projects/share/:project", function(req, res) {
 		}
 
 		jwt.sign({ //create a json web token with the account id inside (used for email conformation)
-			id: req.params.project,
+			project: req.params.project,
+			user: req.user.id
 		}, config.share.secret, {
 			expiresIn: "1d"
 		}, function(err, token) {
@@ -543,3 +543,43 @@ app.post("/projects/share/:project", function(req, res) {
 		res.render("login");
 	}
 })
+
+app.get("/view/:token", function(req, res) {
+	try {
+		var data = jwt.verify(req.params.token, config.share.secret); //check if token is valid
+ 
+		mysql.query(mysql.queries.getProject, [data.project, data.user]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				req.redirect("/projects");
+			} else {
+				mysql.query(mysql.queries.getMilestones, [data.project, data.id]).then((milestones) => {
+					var resObj = {
+						"title": "Milestones",
+						"project": result[0],
+						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
+						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)						
+					}
+
+					if (req.isAuthenticated()) {
+						resObj.user = [
+							{
+								"username": req.user.username,
+								"email": req.user.email
+							}
+						]
+					}
+
+					res.render("shared-project", resObj);
+				}).catch((error) => {
+					console.log('Error retrieving project milestones: ', error.message);
+					res.redirect("/projects");
+				});
+			}
+		}).catch((error) => {
+			console.log("Error retrieving project: ", error.message);
+			res.redirect("/projects");
+		});
+	} catch(e) {
+		console.log(e.message);
+	}
+});
