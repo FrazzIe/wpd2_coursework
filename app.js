@@ -487,3 +487,31 @@ app.get("/verify/:token", function(req, res) { //handles email verficiation toke
 		console.log(e.message);
 	}
 });
+
+app.post("/projects/share/:project", function(req, res) {
+	console.log("hello")
+	if (req.isAuthenticated()) {
+		if (!req.params.project) { //check if param exists
+			req.redirect("/projects");
+			return;
+		} else if (isNaN(req.params.project)) { //check if param is not a number
+			req.redirect("/projects");
+			return;
+		}
+
+		jwt.sign({ //create a json web token with the account id inside (used for email conformation)
+			id: req.params.project,
+		}, config.share.secret, {
+			expiresIn: "1d"
+		}, function(err, token) {
+			if (err) { 
+				res.send({ error: err.message });
+				return;
+			}
+
+			res.send({ url: req.getUrl() + "/view/" + token	})
+		});
+	} else {
+		res.render("login");
+	}
+})
