@@ -255,7 +255,206 @@ app.post('/projects/add', function (request, response) {
 	}
 });
 
+//renders all-milestones.mustache to show all milestones for the project
+//retrieve all of the project's milestones
+//added ':project' to alter url (?) (also for add, delete, and edit)
+app.get("/milestones/:project", function (request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
 
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				request.redirect("/projects");
+			} else {
+				mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((milestones) => {
+					response.render("all-milestones", {
+						"username": request.user.username,
+						"email": request.user.email,
+						"title": 'Milestones',
+						"project": result[0],
+						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
+						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)
+					});
+					console.log("Render all milestones page with: ", result);
+				}).catch((error) => {
+					console.log('Error retrieving project milestones: ', error.message);
+					response.redirect("/projects");
+				});
+			}
+		}).catch((error) => {
+			console.log("Error retrieving project: ", error.message);
+			response.redirect("/projects");
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//renders new-milestone.mustache to add a new milestone
+app.get('/milestones/:project/add', function(request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		response.render("new-milestone", {
+			'title': 'Add a new Milestone',
+			'project_id': request.params.project
+		});
+		console.log("Render new milestone form"); 
+	} else {
+		response.render("login");
+	}
+})
+
+app.post('/milestones/:project/add', function (request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if(isNaN(request.params.project)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Milestone title must be provided.");
+			return;
+		}
+
+		//make sure this project belongs to the user
+		mysql.query(mysql.queries.getProject, [request.params.project, request.user.id]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				response.send("The project you were creating this milestone for does not belong to you");
+			} else {
+				mysql.query(mysql.queries.createMilestone, [request.params.project, request.body.title, request.body.desc]).then((result) => {
+					response.send("ok");
+				}).catch((error) => {
+					console.log('Error creating a milestone: ', error.message);
+					response.send("There was an issue when trying to create a milestone");
+				});
+			}
+		}).catch((error) => {
+			console.log("Error retrieving project: ", error.message);
+			response.send("The project you were creating this milestone for does not exist");
+		});
+	} else {
+		response.render("login");
+	}
+});
+
+//for when user clicks the edit milestone link, edit-milestones.mustache is rendered
+//retrieve one milestone by project id
+app.get('/milestones/:project/edit/:milestone', function(request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		//get a single milestone
+		mysql.query(mysql.queries.getMilestone, [request.params.milestone, request.user.id]).then((result) => {
+			response.render("edit-milestone", {
+				"title": "Edit Milestone",
+				"item": result
+			});
+		}).catch((error) => {
+			console.log('Error getting milestone:', request.params.milestone, error.message);
+			response.redirect("/milestones/" + request.params.project); 			
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//edit post
+//update details for a milestone
+app.post('/milestones/:project/edit/:milestone', function(request, response) {
+	if (request.isAuthenticated()) {
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		if (!request.body.title) {
+			response.status(400).send("Milestone title must be provided.");
+			return;
+		}
+
+		mysql.query(mysql.queries.editMilestone, [request.body.title, request.body.desc, request.params.milestone, request.user.id]).then((result) => {
+			response.send("ok");
+		}).catch((error) => {
+			console.log('Error editing a milestone: ', error.message);
+			response.send("There was an issue when trying to edit the milestone");
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//for when user clicks the delete link with argument request.params.project
+//delete single milestone identified by id
+app.get('/milestones/:project/delete/:milestone', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+    	mysql.query(mysql.queries.deleteMilestone, [request.params.milestone, request.params.project, request.user.id]).then((result) => { //delete milestone
+			response.redirect("/milestones/" + request.params.project);
+		}).catch((error) => {
+			console.log('Error deleting milestone: ', request.params.milestone, error.message);
+			response.redirect("/milestones/" + request.params.project);
+		});
+	} else {
+		response.render("login");
+	}
+})
+
+//for when user clicks the complete milestone link
+//moves a milestone to the completed category
+app.get('/milestones/:project/complete/:milestone', function(request, response) {
+	if (request.isAuthenticated()) { //check if logged in
+		if (!request.params.project || !request.params.milestone) { //check if param exists
+			request.redirect("/projects");
+			return;
+		} else if (isNaN(request.params.project) || isNaN(request.params.milestone)) { //check if param is not a number
+			request.redirect("/projects");
+			return;
+		}
+
+		//var currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    	mysql.query(mysql.queries.completeMilestone, ["CURRENT_DATE()", request.params.milestone, request.user.id]).then((result) => { //delete milestone
+			response.redirect("/milestones/" + request.params.project);
+		}).catch((error) => {
+			console.log('Error deleting milestone: ', request.params.milestone, error.message);
+			response.redirect("/milestones/" + request.params.project);
+		});
+	} else {
+		response.render("login");
+	}
+})
 app.listen(config.app.port, () => { //make app listen for port
 	console.log("Coursework scheduler listening on port " + config.app.port);
 })
