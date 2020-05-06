@@ -1,4 +1,4 @@
-# Coursework Planner
+# Coursework Planner ([Live demo](http://cw-planner.herokuapp.com))
 A web application for students to schedule work/milestones for courseworks
 
 ## Features
