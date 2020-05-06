@@ -1,0 +1,65 @@
+<html lang="en">
+	
+	<head>
+		{{>header}}
+	</head>
+
+	<body>
+		{{>nav}}
+		<div class="container">
+			{{>alert}}
+			<h1 class="display-4">{{ title }}</h1>
+
+			<form id="edit-project-form" method="post" role="form" >   
+
+				{{#item}}
+					<div class="form-group row">
+						<label for="edit-project-id" class="col-sm-2 col-form-label">ID</label>
+						<div class="col-sm-10">
+							<input type="text" readonly class="form-control-plaintext" id="edit-project-id" value="{{ id }}">
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="edit-project-title" class="col-sm-2 col-form-label">Project: </label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-project-title" name="edit-project-title"  value="{{ title }}" >
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="edit-project-module" class="col-sm-2 col-form-label">Module</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="edit-project-module" name="edit-project-module" value="{{ module }}" >
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="edit-project-end-date" class="col-sm-2 col-form-label">Intended Due Date</label>
+						<div class="col-sm-10">
+							<input type="date" class="form-control" id="edit-project-end-date" name="edit-project-end-date" value="{{ end_date }}" >
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<label for="edit-project-due-date" class="col-sm-2 col-form-label">Actual Due Date</label>
+						<div class="col-sm-10">
+							<input type="date" class="form-control" id="edit-project-due-date" name="edit-project-due-date" value="{{ due_date }}" >
+						</div>
+					</div>
+
+					<div class="form-group row">
+						<div class="col-sm">
+							<input type="submit" value="Save project details" class="btn btn-primary">
+						</div>
+					</div>
+
+				{{/item}}
+
+			</form>
+		</div>
+		{{>footer}}
+		<script src="/../../js/edit-project.js"></script>
+	</body>
+
+</html>
