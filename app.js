@@ -101,11 +101,20 @@ app.post("/register", function(req, res) {
 					}, config.mailer.secret, {
 						expiresIn: "1d"
 					}, function(err, token) {
+						if (err) { 
+							res.send(err.message);
+							console.log(err.message);
+						}
 						const url = req.getUrl() + "/verify/" + token
 						mailer.sendMail({
 							to: req.body.email,
 							subject: config.mailer.subject,
 							html: config.mailer.body.format(req.body.username, url)
+						}).then((info) => {
+							console.log(info);
+						}).catch((error) => {
+							console.log(error.message);
+							res.send(error.message)	;
 						}); //sends an email to the user with a link to activate the newly created account
 					});
 
