@@ -5,7 +5,73 @@
 <body>
     {{>nav}}
     <div class="container">
-        Add upcoming milestones in here? maybe?
+        <div class="row">
+            <div class="col">
+                <div class="row align-items-center">
+                    <div class="col-sm-12">
+                        <h1 class="display-4">Upcoming Projects</h1>
+                    </div>
+                </div>
+                {{#projects}}
+                    <div class="row">
+                        <div class="col-sm-12 mt-3">
+                            <div class="text-left">
+                                <div class="card">
+                                    <div class="card-header">
+                                        {{ title }}
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-text">
+                                            <div class="card-title">Module: {{ module }} </div>
+                                            <div class="card-text">Intended Due Date: {{ due_date }} </div>
+                                            <div class="card-text">Actual Completion Date: {{ end_date }} </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer align-items-center">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <a href="milestones/{{ id }}" class="btn btn-primary">View milestones</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/projects}}
+            </div>
+            <div class="col">     
+                <div class="row align-items-center">
+                    <div class="col-sm-12">
+                        <h1 class="display-4">Upcoming Milestones</h1>
+                    </div>
+                </div>
+
+                {{#milestones}} 
+                    <div class="row">
+                        <div class="col-sm-12 mt-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    {{ title }}
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-text">
+                                        {{ description }}
+                                    </div>
+                                </div>
+                                <div class="card-footer align-items-center">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <a href="/milestones/{{ project_id }}/complete/{{ id }}" class="btn btn-success">Set as completed</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/milestones}}
+            </div>
+        </div>
     </div>
 
     {{>footer}}

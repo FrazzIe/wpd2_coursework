@@ -38,9 +38,19 @@ app.use(function(req, res, next) { //funcs to get url
 app.get("/", function(req, res) {
 	res.status(200);
 	if (req.isAuthenticated()) {
-		res.render("home", {
-			username: req.user.username,
-			email: req.user.email
+		mysql.query(mysql.queries.currentProjects, [req.user.id]).then((projects) => {
+			mysql.query(mysql.queries.currentMilestones, [req.user.id]).then((milestones) => {
+				res.render("home", {
+					username: req.user.username,
+					email: req.user.email,
+					projects: projects,
+					milestones: milestones
+				});
+			}).catch((error) => {
+				res.status(500).render("500");
+			});
+		}).catch((error) => {
+			res.status(500).render("500");
 		});
 	} else {
 		res.render("login");
