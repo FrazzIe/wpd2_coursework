@@ -89,22 +89,16 @@ app.get("/logout", function(req, res) {
 });
 
 app.post("/register", function(req, res) {
-	console.log(req.body);
-
 	mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => { //finds any rows with the username or email
 		if (typeof result[0] === "undefined") { //checks if a user does not exist
 			argon2.hash(req.body.password).then((hashedPassword) => { //scrambles the password using argon2
 				mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => { //creates user account in database
-					console.log(result)
-
 					jwt.sign({ //create a json web token with the account id inside (used for email conformation)
 						id: result.insertId,
 					}, config.mailer.secret, {
 						expiresIn: "1d"
 					}, function(err, token) {
-						console.log("token signed: ", token);
 						const url = req.getUrl() + "/verify/" + token
-						console.log(req.body.email, config.mailer.subject, config.mailer.body.format(req.body.username, url))
 						mailer.sendMail({
 							to: req.body.email,
 							subject: config.mailer.subject,
@@ -145,7 +139,6 @@ app.get("/projects", function (request, response) {
 				"projects": "active",
 				"items": result
 			});
-			console.log("Render all projects page with:", result);
 		}).catch((error) => {
 			console.log('Error retrieving all projects:', error.message);
 		});
@@ -167,7 +160,6 @@ app.get('/projects/add', function(request, response) {
 			"projects": "active",
 			'title': 'Add a new Project'
 		});
-		console.log("Render new project form"); 
 	} else {
 		response.render("login");
 	}
@@ -264,14 +256,11 @@ app.post('/projects/edit/:project', function(request, response) {
 //add post
 app.post('/projects/add', function (request, response) {
 	if (request.isAuthenticated()) {
-		console.log(request.body);
 		if (!request.body.title) {
 			response.status(400).send("Project title must be provided.");
 			return;
 		}
 
-		console.log(request.body)
-		// projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
 		mysql.query(mysql.queries.createProject, [request.user.id, request.body.title, request.body.module, request.body.end_date, request.body.due_date]).then((result) => {
 			response.send("ok");
 		}).catch((error) => {
@@ -313,7 +302,6 @@ app.get("/milestones/:project", function (request, response) {
 						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
 						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)
 					});
-					console.log("Render all milestones page with: ", result);
 				}).catch((error) => {
 					console.log('Error retrieving project milestones: ', error.message);
 					response.redirect("/projects");
@@ -343,7 +331,6 @@ app.get('/milestones/:project/add', function(request, response) {
 			'title': 'Add a new Milestone',
 			'project_id': request.params.project
 		});
-		console.log("Render new milestone form"); 
 	} else {
 		response.render("login");
 	}
@@ -501,11 +488,7 @@ app.get("/verify/:token", function(req, res) { //handles email verficiation toke
 	try {
 		var user = jwt.verify(req.params.token, config.mailer.secret); //check if token is valid
 
-		console.log(user);
-
 		mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
-			console.log(result)
-
 			res.redirect("/");
 		}).catch((error) => {
 			res.status(500).send(error.message);
