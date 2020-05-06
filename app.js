@@ -41,16 +41,22 @@ app.get("/", function(req, res) {
 		mysql.query(mysql.queries.currentProjects, [req.user.id]).then((projects) => {
 			mysql.query(mysql.queries.currentMilestones, [req.user.id]).then((milestones) => {
 				res.render("home", {
-					username: req.user.username,
-					email: req.user.email,
+					user: [
+						{
+							username: req.user.username,
+							email: req.user.email
+						}
+					],
 					projects: projects,
 					milestones: milestones
 				});
 			}).catch((error) => {
 				res.status(500).render("500");
+				console.log(error.message);
 			});
 		}).catch((error) => {
 			res.status(500).render("500");
+			console.log(error.message);
 		});
 	} else {
 		res.render("login");
@@ -129,8 +135,12 @@ app.get("/projects", function (request, response) {
 	if (request.isAuthenticated()) {
 		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
 			response.render("all-projects", { 
-				"username": request.user.username,
-				"email": request.user.email,
+				"user": [
+					{
+						"username": request.user.username,
+						"email": request.user.email
+					}
+				],
 				"title": 'My Projects',
 				"projects": "active",
 				"items": result
@@ -148,8 +158,12 @@ app.get("/projects", function (request, response) {
 app.get('/projects/add', function(request, response) {
 	if (request.isAuthenticated()) {
 		response.render("new-project", {
-			"username": request.user.username,
-			"email": request.user.email,
+			"user": [
+				{
+					"username": request.user.username,
+					"email": request.user.email
+				}
+			],
 			"projects": "active",
 			'title': 'Add a new Project'
 		});
@@ -199,8 +213,12 @@ app.get('/projects/edit/:project', function(request, response) {
 				request.redirect("/projects");
 			} else {
 				response.render("edit-project", {
-					"username": request.user.username,
-					"email": request.user.email,
+					"user": [
+						{
+							"username": request.user.username,
+							"email": request.user.email
+						}
+					],
 					"projects": "active",
 					"title": "Edit Project",
 					"item": result
@@ -284,8 +302,12 @@ app.get("/milestones/:project", function (request, response) {
 			} else {
 				mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((milestones) => {
 					response.render("all-milestones", {
-						"username": request.user.username,
-						"email": request.user.email,
+						"user": [
+							{
+								"username": request.user.username,
+								"email": request.user.email
+							}
+						],
 						"title": 'Milestones',
 						"project": result[0],
 						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
@@ -378,6 +400,12 @@ app.get('/milestones/:project/edit/:milestone', function(request, response) {
 		//get a single milestone
 		mysql.query(mysql.queries.getMilestone, [request.params.milestone, request.user.id]).then((result) => {
 			response.render("edit-milestone", {
+				"user": [
+					{
+						"username": request.user.username,
+						"email": request.user.email
+					}
+				],
 				"title": "Edit Milestone",
 				"item": result
 			});

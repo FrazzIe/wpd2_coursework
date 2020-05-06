@@ -18,18 +18,20 @@
 			</li>
 		</ul>
 		<ul class="navbar-nav ml-auto">
-			<li class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					{{ username }}
-				</a>
-				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-dropdown">
-					<a class="dropdown-item" href="#">{{ email }}</a>
-					<div class="dropdown-divider"></div>
-					<form id="logout-form" action="/logout" method="get">
-						<button type="submit" class="dropdown-item">Logout</button>
-					</form>
-				</div>
-			</li>
+			{{#user}}
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="user-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ username }}
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-dropdown">
+						<a class="dropdown-item" href="#">{{ email }}</a>
+						<div class="dropdown-divider"></div>
+						<form id="logout-form" action="/logout" method="get">
+							<button type="submit" class="dropdown-item">Logout</button>
+						</form>
+					</div>
+				</li>
+			{{/user}}
 		</ul>
 	</div>
 </nav>
