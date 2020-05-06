@@ -482,7 +482,7 @@ app.get('/milestones/:project/complete/:milestone', function(request, response) 
 
 		//var currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-    	mysql.query(mysql.queries.completeMilestone, ["CURRENT_DATE()", request.params.milestone, request.user.id]).then((result) => { //delete milestone
+    	mysql.query(mysql.queries.completeMilestone, [request.params.milestone, request.user.id]).then((result) => { //delete milestone
 			response.redirect("/milestones/" + request.params.project);
 		}).catch((error) => {
 			console.log('Error deleting milestone: ', request.params.milestone, error.message);
