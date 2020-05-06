@@ -478,7 +478,7 @@ app.get("/verify/:token", function(req, res) { //handles email verficiation toke
 		mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
 			console.log(result)
 
-			res.send("ok");
+			res.redirect("/");
 		}).catch((error) => {
 			res.status(500).send(error.message);
 			console.log((error.message));
