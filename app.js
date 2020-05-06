@@ -480,9 +480,6 @@ app.get('/milestones/:project/complete/:milestone', function(request, response) 
 		response.render("login");
 	}
 })
-app.listen(config.app.port, () => { //make app listen for port
-	console.log("Coursework scheduler listening on port " + config.app.port);
-})
 
 app.get("/verify/:token", function(req, res) { //handles email verficiation tokens
 	try {
@@ -566,3 +563,7 @@ app.get("/view/:token", function(req, res) {
 		console.log(e.message);
 	}
 });
+
+app.listen(config.app.port, () => { //make app listen for port
+	console.log("Coursework scheduler listening on port " + config.app.port);
+})
