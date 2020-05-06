@@ -32,6 +32,9 @@ const config = {
             <br>
             Please click the link to confirm your email: <a href="{1}">{1}</a>
         `, //email confirmation body, {0} for the username, {1} for the confirmation url
+    },
+    share: {
+        secret: process.env.SHARE_SECRET
     }
 }
 

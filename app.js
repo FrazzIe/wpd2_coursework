@@ -41,19 +41,28 @@ app.get("/", function(req, res) {
 		mysql.query(mysql.queries.currentProjects, [req.user.id]).then((projects) => {
 			mysql.query(mysql.queries.currentMilestones, [req.user.id]).then((milestones) => {
 				res.render("home", {
-					username: req.user.username,
-					email: req.user.email,
+					user: [
+						{
+							username: req.user.username,
+							email: req.user.email
+						}
+					],
+					title: "Home",
 					projects: projects,
 					milestones: milestones
 				});
 			}).catch((error) => {
 				res.status(500).render("500");
+				console.log(error.message);
 			});
 		}).catch((error) => {
 			res.status(500).render("500");
+			console.log(error.message);
 		});
 	} else {
-		res.render("login");
+		res.render("login", {
+			title: "Login",
+		});
 	}
 })
 
@@ -83,22 +92,16 @@ app.get("/logout", function(req, res) {
 });
 
 app.post("/register", function(req, res) {
-	console.log(req.body);
-
 	mysql.query(mysql.queries.findUser, [req.body.username, req.body.email]).then((result) => { //finds any rows with the username or email
 		if (typeof result[0] === "undefined") { //checks if a user does not exist
 			argon2.hash(req.body.password).then((hashedPassword) => { //scrambles the password using argon2
 				mysql.query(mysql.queries.createUser, [req.body.username, req.body.email, hashedPassword]).then((result) => { //creates user account in database
-					console.log(result)
-
 					jwt.sign({ //create a json web token with the account id inside (used for email conformation)
 						id: result.insertId,
 					}, config.mailer.secret, {
 						expiresIn: "1d"
 					}, function(err, token) {
-						console.log("token signed: ", token);
 						const url = req.getUrl() + "/verify/" + token
-						console.log(req.body.email, config.mailer.subject, config.mailer.body.format(req.body.username, url))
 						mailer.sendMail({
 							to: req.body.email,
 							subject: config.mailer.subject,
@@ -129,18 +132,21 @@ app.get("/projects", function (request, response) {
 	if (request.isAuthenticated()) {
 		mysql.query(mysql.queries.getProjects, [request.user.id]).then((result) => {
 			response.render("all-projects", { 
-				"username": request.user.username,
-				"email": request.user.email,
+				"user": [
+					{
+						"username": request.user.username,
+						"email": request.user.email
+					}
+				],
 				"title": 'My Projects',
 				"projects": "active",
 				"items": result
 			});
-			console.log("Render all projects page with:", result);
 		}).catch((error) => {
 			console.log('Error retrieving all projects:', error.message);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -148,14 +154,17 @@ app.get("/projects", function (request, response) {
 app.get('/projects/add', function(request, response) {
 	if (request.isAuthenticated()) {
 		response.render("new-project", {
-			"username": request.user.username,
-			"email": request.user.email,
+			"user": [
+				{
+					"username": request.user.username,
+					"email": request.user.email
+				}
+			],
 			"projects": "active",
 			'title': 'Add a new Project'
 		});
-		console.log("Render new project form"); 
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -178,7 +187,7 @@ app.get('/projects/delete/:project', function(request, response) {
 			response.redirect("/projects"); 
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -199,8 +208,12 @@ app.get('/projects/edit/:project', function(request, response) {
 				request.redirect("/projects");
 			} else {
 				response.render("edit-project", {
-					"username": request.user.username,
-					"email": request.user.email,
+					"user": [
+						{
+							"username": request.user.username,
+							"email": request.user.email
+						}
+					],
 					"projects": "active",
 					"title": "Edit Project",
 					"item": result
@@ -211,7 +224,7 @@ app.get('/projects/edit/:project', function(request, response) {
 			response.redirect("/projects"); 
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -239,21 +252,18 @@ app.post('/projects/edit/:project', function(request, response) {
 			response.send("There was an issue when trying to edit the project");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
 //add post
 app.post('/projects/add', function (request, response) {
 	if (request.isAuthenticated()) {
-		console.log(request.body);
 		if (!request.body.title) {
 			response.status(400).send("Project title must be provided.");
 			return;
 		}
 
-		console.log(request.body)
-		// projectDAO.addProject( request.body.project, request.body.module, request.body.intendedDate, request.body.actualDate);
 		mysql.query(mysql.queries.createProject, [request.user.id, request.body.title, request.body.module, request.body.end_date, request.body.due_date]).then((result) => {
 			response.send("ok");
 		}).catch((error) => {
@@ -261,7 +271,7 @@ app.post('/projects/add', function (request, response) {
 			response.send("There was an issue when trying to create a project");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -284,14 +294,17 @@ app.get("/milestones/:project", function (request, response) {
 			} else {
 				mysql.query(mysql.queries.getMilestones, [request.params.project, request.user.id]).then((milestones) => {
 					response.render("all-milestones", {
-						"username": request.user.username,
-						"email": request.user.email,
+						"user": [
+							{
+								"username": request.user.username,
+								"email": request.user.email
+							}
+						],
 						"title": 'Milestones',
 						"project": result[0],
 						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
 						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)
 					});
-					console.log("Render all milestones page with: ", result);
 				}).catch((error) => {
 					console.log('Error retrieving project milestones: ', error.message);
 					response.redirect("/projects");
@@ -302,7 +315,7 @@ app.get("/milestones/:project", function (request, response) {
 			response.redirect("/projects");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -321,9 +334,8 @@ app.get('/milestones/:project/add', function(request, response) {
 			'title': 'Add a new Milestone',
 			'project_id': request.params.project
 		});
-		console.log("Render new milestone form"); 
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -359,7 +371,7 @@ app.post('/milestones/:project/add', function (request, response) {
 			response.send("The project you were creating this milestone for does not exist");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 });
 
@@ -378,6 +390,12 @@ app.get('/milestones/:project/edit/:milestone', function(request, response) {
 		//get a single milestone
 		mysql.query(mysql.queries.getMilestone, [request.params.milestone, request.user.id]).then((result) => {
 			response.render("edit-milestone", {
+				"user": [
+					{
+						"username": request.user.username,
+						"email": request.user.email
+					}
+				],
 				"title": "Edit Milestone",
 				"item": result
 			});
@@ -386,7 +404,7 @@ app.get('/milestones/:project/edit/:milestone', function(request, response) {
 			response.redirect("/milestones/" + request.params.project); 			
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -414,7 +432,7 @@ app.post('/milestones/:project/edit/:milestone', function(request, response) {
 			response.send("There was an issue when trying to edit the milestone");
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -437,7 +455,7 @@ app.get('/milestones/:project/delete/:milestone', function(request, response) {
 			response.redirect("/milestones/" + request.params.project);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
 })
 
@@ -462,28 +480,95 @@ app.get('/milestones/:project/complete/:milestone', function(request, response) 
 			response.redirect("/milestones/" + request.params.project);
 		});
 	} else {
-		response.render("login");
+		response.redirect("/");
 	}
-})
-app.listen(config.app.port, () => { //make app listen for port
-	console.log("Coursework scheduler listening on port " + config.app.port);
 })
 
 app.get("/verify/:token", function(req, res) { //handles email verficiation tokens
 	try {
 		var user = jwt.verify(req.params.token, config.mailer.secret); //check if token is valid
 
-		console.log(user);
-
 		mysql.query(mysql.queries.activateUser, [user.id]).then((result) => { //activate user account
-			console.log(result)
-
-			res.send("ok");
+			res.redirect("/");
 		}).catch((error) => {
 			res.status(500).send(error.message);
 			console.log((error.message));
 		});       
 	} catch(e) {
 		console.log(e.message);
+		res.redirect("/");
 	}
 });
+
+app.post("/projects/share/:project", function(req, res) {
+	if (req.isAuthenticated()) {
+		if (!req.params.project) { //check if param exists
+			req.redirect("/projects");
+			return;
+		} else if (isNaN(req.params.project)) { //check if param is not a number
+			req.redirect("/projects");
+			return;
+		}
+
+		jwt.sign({ //create a json web token with the account id inside (used for email conformation)
+			project: req.params.project,
+			user: req.user.id
+		}, config.share.secret, {
+			expiresIn: "1d"
+		}, function(err, token) {
+			if (err) { 
+				res.send({ error: err.message });
+				return;
+			}
+
+			res.send({ url: req.getUrl() + "/view/" + token	})
+		});
+	} else {
+		res.redirect("/");
+	}
+})
+
+app.get("/view/:token", function(req, res) {
+	try {
+		var data = jwt.verify(req.params.token, config.share.secret); //check if token is valid
+ 
+		mysql.query(mysql.queries.getProject, [data.project, data.user]).then((result) => {
+			if (typeof result[0] === "undefined") { //if project doesn't exist
+				req.redirect("/projects");
+			} else {
+				mysql.query(mysql.queries.getMilestones, [data.project, data.id]).then((milestones) => {
+					var resObj = {
+						"title": "Project Overview",
+						"project": result[0],
+						"cMilestones": milestones.filter(milestone => milestone.completed_at !== null),
+						"uMilestones": milestones.filter(milestone => milestone.completed_at === null)						
+					}
+
+					if (req.isAuthenticated()) {
+						resObj.user = [
+							{
+								"username": req.user.username,
+								"email": req.user.email
+							}
+						]
+					}
+
+					res.render("shared-project", resObj);
+				}).catch((error) => {
+					console.log('Error retrieving project milestones: ', error.message);
+					res.redirect("/projects");
+				});
+			}
+		}).catch((error) => {
+			console.log("Error retrieving project: ", error.message);
+			res.redirect("/projects");
+		});
+	} catch(e) {
+		console.log(e.message);
+		res.redirect("/");
+	}
+});
+
+app.listen(config.app.port, () => { //make app listen for port
+	console.log("Coursework scheduler listening on port " + config.app.port);
+})
