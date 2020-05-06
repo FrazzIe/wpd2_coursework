@@ -18,7 +18,9 @@ var queries = { //list of mysql queries
     getMilestone: "SELECT milestones.id, milestones.project_id, milestones.title, milestones.description FROM milestones JOIN projects ON (milestones.project_id = projects.id) WHERE milestones.id = ? AND projects.user_id = ?",
     editMilestone: "UPDATE milestones JOIN projects ON (milestones.project_id = projects.id) SET milestones.title = ?, milestones.description = ? WHERE milestones.id = ? AND projects.user_id = ?",
     deleteMilestone: "DELETE FROM milestones WHERE milestones.id = ? AND (SELECT projects.user_id FROM projects WHERE projects.id = ?) = ?",
-    completeMilestone: "UPDATE milestones JOIN projects ON (milestones.project_id = projects.id) SET completed_at = ? WHERE milestones.id = ? AND projects.user_id = ?"
+    completeMilestone: "UPDATE milestones JOIN projects ON (milestones.project_id = projects.id) SET completed_at = ? WHERE milestones.id = ? AND projects.user_id = ?",
+    currentProjects: "SELECT id, title, module, DATE_FORMAT(end_date, '%Y-%m-%d') AS 'end_date', DATE_FORMAT(due_date, '%Y-%m-%d') AS 'due_date' FROM projects WHERE user_id = ? AND DATEDIFF(due_date, CURRENT_DATE()) >= 0 ORDER BY due_date ASC LIMIT 10",
+    currentMilestones: "SELECT milestones.id, milestones.project_id, milestones.title, milestones.description FROM milestones JOIN projects ON (milestones.project_id = projects.id) WHERE user_id = ? AND milestones.completed_at IS NULL AND DATEDIFF(projects.due_date, CURRENT_DATE()) >= 0 ORDER BY projects.due_date ASC LIMIT 10"
 }
 
 function execute(sql, params) { //Asynchronous sql execute function
