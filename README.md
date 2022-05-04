@@ -2,7 +2,7 @@
 A web application for students to schedule work/milestones for courseworks
 
 ## Features
-- Password encryption (argon2)
+- Password hashing (argon2)
 - Login/Registration
 - Email verification (prevent spam accounts)
 - Add/Delete/Edit Projects
